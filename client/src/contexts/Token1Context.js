@@ -46,20 +46,27 @@ export default function TokenProvider({ children }) {
 
   let web3 = new Web3(window.ethereum);
 
-  async function Swap(amounts, bool, percent) {
+  async function Swap(amounts, bool, percent,token0,token1) {
     // const walletAddress = await connectWallet();
     // console.log(walletAddress);
     try {
       if (bool) {
         const ContractRouter = new web3.eth.Contract(routerABI, routerAddress);
-        const Contract = new web3.eth.Contract(kyzABI, kyzAddress);
+        const Contract0 = new web3.eth.Contract(kyzABI, token0);
+        const Contract1 = new web3.eth.Contract(kyzABI, token1);
         // const userAddress = web3.utils.toChecksumAddress(
         //   window.ethereum.selectedAddress
         // );
+        const decimals0=await Contract0.methods.decimals().call()
+        const decimals1=await Contract1.methods.decimals().call()
+      const amount = (amounts * 10 ** decimals0).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
+        
 
-        const amount = web3.utils.toWei(amounts?.toString() || "0", "ether");
+        
         console.log(amount);
-        const Balance = await Contract.methods.balanceOf(walletAddress).call();
+        const Balance = await Contract0.methods.balanceOf(walletAddress).call();
         console.log(Balance);
         if (Balance < amount) {
           return swal({
@@ -70,25 +77,27 @@ export default function TokenProvider({ children }) {
             className: "modal_class_success",
           });
         }
-        console.log(estimatedValue1);
+        console.log("estimated value",estimatedValue1);
 
-        var slippageValue = estimatedValue1 - (percent * estimatedValue1) / 100;
+        var slippageValue = (estimatedValue1 - (percent * estimatedValue1) / 100);
         console.log("slippages", slippageValue);
-        slippageValue = web3.utils.toWei(slippageValue.toString(), "ether");
+        slippageValue  = (slippageValue * 10 ** decimals1).toLocaleString("fullwide", {
+          useGrouping: false,
+        });
         console.log("slippages", slippageValue);
-        const Approve = await Contract.methods
+        const Approve = await Contract0.methods
           .approve(routerAddress, amount)
           .send({ from: walletAddress });
         await Approve;
         const ExactInputSingle = ContractRouter.methods
           .exactInputSingle([
-            kyzAddress,
-            DTXAddress,
+            token0,
+            token1,
             3000,
             walletAddress,
             1780400920,
             amount,
-            slippageValue,
+            slippageValue,//slippage set to 0 ATM
             0,
           ])
           .send({ from: walletAddress });
@@ -270,16 +279,21 @@ export default function TokenProvider({ children }) {
     );
     console.log(Number(value));
   };
-  const quoter = async (amounts, token) => {
+  const quoter = async (amounts, token,token0,token1) => {
     const quoterContract = new web3.eth.Contract(quoterABI, quoterAddress);
     console.log(amounts);
-
+    const Token0Contract=await getTokenContracts(token0)
+    const Token1Contract=await getTokenContracts(token1)
+    const decimals0=await Token0Contract.methods.decimals().call()
+    const decimals1=await Token1Contract.methods.decimals().call()
     if (token == 1) {
       if (amounts == 0) {
         setEstimatedValue(0);
         return;
       }
-      const amount = web3.utils.toWei(amounts.toString(), "ether");
+      const amount = (amounts * 10 ** decimals0).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
 
       console.log(amount);
       // const amount = web3.utils.fromWei(amounts, "ether");
@@ -287,8 +301,8 @@ export default function TokenProvider({ children }) {
       // console.log(quoterContract);
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
-          kyzAddress,
-          DTXAddress,
+          token0,
+          token1,
           3000,
           amount,
           0
@@ -302,7 +316,9 @@ export default function TokenProvider({ children }) {
         },
         "latest"
       );
-      const amount1 = web3.utils.fromWei(resultEst.toString(), "ether");
+      const amount1 = (resultEst / 10 ** decimals1).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
 
       console.log(amount);
       setEstimatedValue(Number(amount1).toFixed(5));
@@ -312,7 +328,9 @@ export default function TokenProvider({ children }) {
         setEstimatedValue1(0);
         return;
       }
-      const amount = web3.utils.toWei(amounts.toString(), "ether");
+      const amount = (amounts * 10 ** decimals1).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
 
       console.log(amount);
       // const amount = web3.utils.fromWei(amounts, "ether");
@@ -320,9 +338,8 @@ export default function TokenProvider({ children }) {
       // console.log(quoterContract);
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
-          DTXAddress,
-          kyzAddress,
-
+          token1,
+          token0,
           3000,
           amount,
           0
@@ -336,7 +353,9 @@ export default function TokenProvider({ children }) {
         },
         "latest"
       );
-      const amount1 = web3.utils.fromWei(resultEst.toString(), "ether");
+      const amount1 = (resultEst / 10 ** decimals0).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
 
       console.log(amount);
       setEstimatedValue1(Number(amount1).toFixed(5));
@@ -365,11 +384,14 @@ export default function TokenProvider({ children }) {
 
       var value = 0.05;
       value = web3.utils.toWei(value.toString(), "ether");
+      let returnValue
       if (boolean1 == true && boolean2 == true && boolean3 == true) {
         try {
           const PausableMintBurn = await cycContract.methods
             .DeployPausableMintBurn(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(PausableMintBurn);
         } catch (err) {
           console.log("PausableMintBurn", err);
@@ -378,7 +400,10 @@ export default function TokenProvider({ children }) {
         try {
           const MintBurn = await cycContract.methods
             .DeployMintBurn(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value })
+            .then((value) => {
+              returnValue = value;
+            });
           console.log(MintBurn);
         } catch (err) {
           console.log("MintBurn", err);
@@ -387,7 +412,9 @@ export default function TokenProvider({ children }) {
         try {
           const PausableBurn = await cycContract.methods
             .DeployPausableBurn(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(PausableBurn);
         } catch (err) {
           console.log("PausableBurn", err);
@@ -396,7 +423,9 @@ export default function TokenProvider({ children }) {
         try {
           const PausableMint = await cycContract.methods
             .DeployPausableMint(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(PausableMint);
         } catch (err) {
           console.log("PausableMint", err);
@@ -405,7 +434,9 @@ export default function TokenProvider({ children }) {
         try {
           const burnable = await cycContract.methods
             .DeployBurnable(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(burnable);
         } catch (err) {
           console.log("burnable", err);
@@ -414,7 +445,9 @@ export default function TokenProvider({ children }) {
         try {
           const Mintable = await cycContract.methods
             .DeployMintable(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(Mintable);
         } catch (err) {
           console.log("Mintable", err);
@@ -423,14 +456,16 @@ export default function TokenProvider({ children }) {
         try {
           const Pausable = await cycContract.methods
             .DeployPausable(name, symbol, totalSupply, decimals)
-            .send({ from: walletAddress, value: value });
+            .send({ from: walletAddress, value: value }).then((value) => {
+              returnValue = value;
+            });
           console.log(Pausable);
         } catch (err) {
           console.log("Pausable", err);
         }
       } else if (boolean1 == false && boolean2 == false && boolean3 == false) {
         try {
-          var returnValue;
+          
 
           const ERC20 = await cycContract.methods
             .DeployERC20(name, symbol, totalSupply, decimals)
@@ -440,18 +475,12 @@ export default function TokenProvider({ children }) {
             });
 
           // if (loader == 0) {
+            await ERC20
           console.log("ERC20", ERC20);
-          console.log(returnValue);
-          console.log(returnValue.events.TokenCreated.returnValues.token);
-          return swal({
-            title: "kindly save the following address",
-            text:
-              "Token Address:" +
-              returnValue.events.TokenCreated.returnValues.token,
-            icon: "warning",
-            button: "OK!",
-            className: "modal_class_success",
-          });
+          console.log("return value",returnValue);
+          console.log("return value address",returnValue.events.TokenCreated.returnValues.token);
+          
+          
           // }
 
           // return swal({
@@ -465,6 +494,15 @@ export default function TokenProvider({ children }) {
           console.log("ERC20", err);
         }
       }
+      return swal({
+        title: "kindly save the following address",
+        text:
+          "Token Address:" +
+          returnValue.events.TokenCreated.returnValues.token,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
     }
   };
 
@@ -1083,6 +1121,54 @@ export default function TokenProvider({ children }) {
     formattedNum += units[unitIndex];
     return formattedNum;
   }
+async function chechkChain(){
+  if(walletAddress.length>0){
+    
+    try{
+      await window.ethereum.request({
+        method: "wallet_switchEthereumChain",
+        params: [{ chainId: Web3.utils.toHex("0x13881") }],
+    });
+    }
+    catch(err){
+      if(err.code=4902){
+        await window.ethereum.request({
+          method: "wallet_addEthereumChain",
+          params: [
+            {
+              chainId: Web3.utils.toHex("0x13881"),
+              chainName: "Mumbai Testnet",
+              rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
+              nativeCurrency: {
+                name: "Mumbai Testnet",
+                symbol: "MATIC",
+                decimals: 18,
+              },
+              blockExplorerUrls: ["https://polygonscan.com/"],
+            },
+          ],
+        });
+        await window.ethereum.request({
+          method: "wallet_switchEthereumChain",
+          params: [{ chainId: Web3.utils.toHex("0x13881") }],
+      });
+
+      }
+      else{
+        alert("Kindly Switch Your Chain to mumbai")
+
+      }
+     
+      
+      
+    }
+    
+
+  }
+  
+} 
+
+
   return (
     <Token1Context.Provider
       value={{
@@ -1117,7 +1203,8 @@ export default function TokenProvider({ children }) {
         checkTime,
       
         getManagerContract,
-        getTokenContracts
+        getTokenContracts,
+        chechkChain
       }}
     >
       {children}

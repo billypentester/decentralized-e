@@ -44,6 +44,7 @@ contractMum.events.Transfer({}, 'latest')
 .on("data", async(event)=>{
     console.log("Called Successfully")
     const { from, to,token, amount, nonce, signature } = event.returnValues;
+    console.log(from,"ok", to,"ok",token,"ok", amount,"ok", nonce, "ok",signature )
     const txToken= await contractMum.methods.TokenToToken(token).call();
     const tx1 =await contractBsc.methods.recieve(from,to,txToken, amount, nonce, signature).encodeABI()
     
@@ -68,6 +69,7 @@ contractBsc.events.Transfer({}, 'latest')
 .on("data", async(event)=>{
   console.log("Called Successfully")
   const { from, to,token, amount, nonce, signature } = event.returnValues;
+  console.log(from,"ok", to,"ok",token,"ok", amount,"ok", nonce, "ok",signature )
   const txToken= await contractBsc.methods.TokenToToken(token).call();
   console.log(txToken)
   const tx1 =await contractMum.methods.recieve(from,to,txToken, amount, nonce, signature).encodeABI()
@@ -88,7 +90,58 @@ contractBsc.events.Transfer({}, 'latest')
 });
 
 
+contractBsc.events.LiquidityAdded({}, 'latest')
+.on("data", async(event)=>{
+  console.log("Called Successfully")
+  const { user, token, amount} = event.returnValues;
+  console.log(event.returnValues);
+  console.log(user, token, amount)
+  try{
+    var response=await fetch("http://localhost:5000/BscPosition",{
+        method:"POST",
+        body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount}),
+        headers:{"Content-Type":"application/json"}
+    })
+    console.log(response.status)
+    
+}
+catch(err){
+    console.log("err",err)
+}
 
+  
+  
+}).on("connected", function(subscriptionId){
+  console.log("connected bitch2");
+});
+
+
+
+contractMum.events.LiquidityAdded({}, 'latest')
+.on("data", async(event)=>{
+    console.log("Called Successfully")
+    const { user, token, amount } = event.returnValues;
+    console.log(event.returnValues);
+  console.log(user, token, amount)
+    try{
+      var response=await fetch("http://localhost:5000/MumPosition",{
+          method:"POST",
+          body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount}),
+          headers:{"Content-Type":"application/json"}
+      })
+      console.log(response.status)
+      
+  }
+  catch(err){
+      console.log("err",err)
+  }
+   
+    
+    
+})
+.on("connected", function(subscriptionId){
+    console.log("connected bitch1");
+});
 
 
 console.log("wellplayed")

@@ -2,7 +2,7 @@
 import './../../index.css'
 import React, {useState, useEffect, useContext} from 'react'
 import { Token1Context } from "../../contexts/Token1Context";
-
+import inputTokens from '../../data/inputTokens'
 function CreatePool() {
 
   const {
@@ -36,6 +36,10 @@ function CreatePool() {
   
   const [token0Amount, setToken0Amount]=useState()
   const [token1Amount, setToken1Amount]=useState()
+  const [swapToken0, setSwapToken0] = useState();
+  const [swapToken1, setSwapToken1] = useState();
+  const [swapToken0Name, setSwapToken0Name] = useState("Select");
+  const [swapToken1Name, setSwapToken1Name] = useState("Select");
 
   const handleMouseDown = (event) => {
     setIsDragging(true);
@@ -94,8 +98,10 @@ useEffect(()=>{
                     <div class="form-group">
                       <label for="Name" class="form-label mt-4">Token Name</label>
                       <div class="input-group mb-3">
-                        <input type="number" class="form-control" id="Name" placeholder='Ex: "0x000000000000000"' onChange={(e)=>{setToken0(e.target.value) }}/>
-                        <input type="number" class="form-control" id="Name" placeholder='Ex: "0x000000000000000"' onChange={(e)=>{setToken1(e.target.value) }}/>
+                        
+                        <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#send">{swapToken0Name}</button>
+                      <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken1Name}</button>
+                      
                       </div>
                     </div>
                   </div>
@@ -299,6 +305,95 @@ useEffect(()=>{
         </div>
 
       </div>
+
+
+      <div className="modal fade" id="send" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Token</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                <div class="form-group">
+                  <label class="form-label">Search</label>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                </div>
+                <div class="d-flex flex-column my-3">
+                  {inputTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setToken0(token.address);setSwapToken0Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                  
+                  
+                  
+                  
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
+      <div className="modal fade" id="get" tabindex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Token</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                <div class="form-group">
+                  <label class="form-label">Search</label>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                </div>
+                <div class="d-flex flex-column my-3">
+                {inputTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setToken1(token.address);setSwapToken1Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
     </div>
   )
 }

@@ -1,12 +1,36 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext,useEffect} from 'react'
 import { BridgeContext } from "../../contexts/BridgeContext";
 import { Token1Context } from '../../contexts/Token1Context';
-
+import BridgeTokens from "../../data/BridgeTokens";
+import Blockchains from "../../data/Blockchains";
 function UseBridge() {
+  const [chainId,setchainId]=useState()
+  const [tokenValue,setTokenValue]=useState()
+  const [tokenName,setTokenName]=useState(0)
+    const [tokenFee,setTokenFee]=useState()
+  const [tokenSupply,setTokenSupply]=useState()
+  const [secondTOken,setsecondTOken]=useState()
+  const [secondTokenSymbol,setsecondTokenSymbol]=useState()
+
+  const [tokenNameW,setTokenNameW]=useState(0)
+  const [useRemainings,setUseRemainings]=useState(0)
+  const [chainIdW,setchainIdW]=useState()
+  const [tokenReserves,setTokenReserves]=useState()
+  const [swapToken0Name, setSwapToken0Name] = useState("Select");
+  const [swapToken1Name, setSwapToken1Name] = useState("Select");
+  const [swapChain0Name, setswapChain0Name] = useState("Select");
+  const [swapChain1Name, setswapChain1Name] = useState("Select");
   const {
     
     addTokenToBlockchain,
-    
+    getTokenContract,
+    getBSCTokenContract,
+    getMUMTokenContract,
+    APPROVEtoken,
+    getBscBridgeContract,
+    getMumBridgeContract,
+    Deposit,
+    getRemainingBalances
     
   } = useContext(BridgeContext);
   const {
@@ -16,6 +40,130 @@ function UseBridge() {
     approveTokens
     
   } = useContext(Token1Context);
+
+    
+async function getTokenCredentials(mum,token){
+  let contract,contract0
+  let TokenContract
+
+  setTokenFee(undefined)
+  try{
+  if(mum && token){
+
+ 
+  if(mum==0x13881){
+     contract=await getMumBridgeContract()
+     contract0= await getBscBridgeContract()
+ TokenContract = await getMUMTokenContract(token);
+  }else{
+    contract=await getBscBridgeContract()
+    contract0= await getMumBridgeContract()
+    TokenContract = await getBSCTokenContract(token);
+  }
+  console.log("chala yahan tk", contract._address)
+  const allowed=await contract.methods.allowedTokens(token).call()
+  const paused=await contract.methods.pausedTokens(token).call()
+  if(allowed==1 && paused==0){
+    const fee= await contract.methods.FeeForToken(token).call()
+    setTokenFee(fee)
+   
+
+    const secondTOken = await contract.methods.TokenToToken(token).call()
+    setsecondTOken(secondTOken)
+
+    let Supply= await contract0.methods.totalActualReservesForTokens(secondTOken).call()
+    console.log("SUPLLY HERE",Supply)
+    const decimals = await TokenContract.methods.decimals().call()
+    Supply = (Supply / 10 ** decimals).toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    setTokenSupply(Supply)
+    let secondTokenContract
+    if(mum==0x13881){
+       secondTokenContract= await getBSCTokenContract(secondTOken)
+    }else{
+
+       secondTokenContract= await getMUMTokenContract(secondTOken)
+
+    }
+    
+    const symbol=await secondTokenContract.methods.symbol().call()
+    setsecondTokenSymbol(symbol)
+
+
+    
+  }
+  else{
+    setTokenFee(-1)
+
+  }
+  
+}
+  }catch(err){
+    console.log(err)
+
+  }
+}
+
+
+
+async function getTokenCredentialsW(mum,token){
+  let contract,contract0
+  let TokenContract
+  console.log(mum,token)
+
+  setTokenReserves(undefined)
+  try{
+  if(mum && token){
+
+ 
+  if(mum==0x13881){
+     contract=await getMumBridgeContract()
+     contract0= await getBscBridgeContract()
+ TokenContract = await getMUMTokenContract(token);
+  }else{
+    contract=await getBscBridgeContract()
+    contract0= await getMumBridgeContract()
+    TokenContract = await getBSCTokenContract(token);
+  }
+  const allowed=await contract.methods.allowedTokens(token).call()
+  const paused=await contract.methods.pausedTokens(token).call()
+  if(allowed==1 && paused==0){
+  console.log("chala yahan tk", contract._address)
+  const balance=await contract.methods.userRemainingBalance(walletAddress,token).call()
+  const reserves=await contract.methods.totalActualReservesForTokens(token).call()
+  
+  const decimals = await TokenContract.methods.decimals().call()
+  let SupplyBalance = (balance / 10 ** decimals).toLocaleString("fullwide", {
+    useGrouping: false,
+  });
+  let SupplyReserves = (reserves / 10 ** decimals).toLocaleString("fullwide", {
+    useGrouping: false,
+  });
+
+  setTokenReserves(SupplyReserves)
+  setUseRemainings(SupplyBalance)
+}
+else{
+  setTokenReserves(-1)
+
+}
+}
+  }catch(err){
+    console.log(err)
+
+  }
+}
+
+useEffect(()=>{
+  getTokenCredentials(chainId,tokenName)
+
+},[tokenName,chainId])
+useEffect(()=>{
+  getTokenCredentialsW(chainIdW,tokenNameW)
+},[tokenNameW,chainIdW])
+
+
   const [mumbaiToken,setMumbaiToken]= useState()
   const [bscToken,setBscToken]= useState()
   const [fee,setFee]= useState()
@@ -44,47 +192,57 @@ function UseBridge() {
 
                 <div class="tab-pane fade show active" id="DepositTab" role="tabpanel" aria-labelledby="Deposit">
                   <div className="row">
-                    <div className="row flex-row justify-content-center align-items-end">
-                      <div className="col-6">
-                        <div className='form-group'>
-                          <label for="From" class="form-label mt-4">From</label>
-                          <input type="text" id="From" className="form-control" placeholder='0.0' onChange={(e)=>{setMumbaiToken(e.target.value)}}/>
-                        </div>
-                      </div>
-                      <div className="col-6">
-                        <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3" onClick={()=>{addTokenToBlockchain(mumbaiToken, bscToken, fee)}}>Select Chain</button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="row flex-row justify-content-center align-items-end">
-                      <div className="col-6">
-                        <div className='form-group'>
-                          <label for="To" class="form-label mt-4">To</label>
-                          <input type="text" id="To" className="form-control" placeholder='0.0' onChange={(e)=>{setBscToken(e.target.value)}}/>
-                        </div>
-                      </div>
-                      <div className="col-6">
-                        <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Chain</button>
-                        </div>
-                      </div> 
-                    </div> 
+                    
+                    
                     <div className="row flex-row justify-content-center align-items-end">
                       <div className="col-6">
                         <div className='form-group'>
                           <label for="Fee" class="form-label mt-4">Fee</label>
-                          <input type="text" id="Fee" className="form-control" placeholder='0.0' onChange={(e)=>{setFee(e.target.value)}}/>
+                          <input type="text" id="Fee" className="form-control" placeholder='0.0' onChange={(e)=>{setTokenValue(e.target.value)}}/>
                         </div>
                       </div>
                       <div className="col-6">
                         <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Chain</button>
+                          <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
+                          <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
+                          
                         </div>
                       </div>
+                      {tokenFee?<>
+            {tokenFee>0?<><div className="my-2">
+            
+            <div className="d-flex mx-4 p-2">
+              <h4>{chainId==0x13881?"BSC ":"MUMBAI "}: Token {secondTokenSymbol?secondTokenSymbol:<></>}:</h4>
+
+
+              <div className="dropdown mx-2">
+              <p>{secondTOken?secondTOken:<></>}</p>
+                
+              </div>
+              
+            </div>
+
+            <div className="d-flex mx-4 p-2">
+              
+              <div className="dropdown mx-2">
+                <h4>Total Actual Reserves</h4>
+                <p>{tokenSupply?tokenSupply:<></>}</p>
+              </div>
+            </div>
+            <div className="d-flex mx-4 p-2">
+              
+             
+            </div>
+            </div> 
+            <div className="dropdown mx-2">
+                
+                <button type="button" 
+            class="btn btn-lg btn-primary w-75 my-4 rounded-pill"
+            onClick={() => {
+              APPROVEtoken(chainId,tokenName,tokenValue)
+            }}>Approve Token</button>
+                </div>
+             </>:<p>This Token is not allowed on this blockchain</p>}</>:<></>}
                     </div>
                      
                     <div className='row flex-row justify-content-center mt-5 mb-3'>
@@ -92,7 +250,7 @@ function UseBridge() {
                       walletAddress.length > 0 ? 
                       (
                         <>
-                          <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => { addTokenToBlockchain(mumbaiToken, bscToken, fee); }}>Deposit</button>
+                          <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => { Deposit(chainId,tokenName, tokenValue); }}>Deposit</button>
                         </>
                       ) 
                       : 
@@ -108,63 +266,87 @@ function UseBridge() {
 
                 <div class="tab-pane fade" id="WidthrawalTab" role="tabpanel" aria-labelledby="Widhrawal">
                   <div className="row">
+                    
+                    
                     <div className="row flex-row justify-content-center align-items-end">
-                      <div className="col-6">
-                        <div className='form-group'>
-                          <label for="From" class="form-label mt-4">From</label>
-                          <input type="text" id="From" className="form-control" placeholder='0.0' onChange={(e)=>{setMumbaiToken(e.target.value)}}/>
-                        </div>
-                      </div>
+                      
                       <div className="col-6">
                         <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3" onClick={()=>{addTokenToBlockchain(mumbaiToken, bscToken, fee)}}>Select Chain</button>
+                        <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#getW">{swapToken1Name}</button>
+                          <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#sendW">{swapChain1Name}</button>
                         </div>
                       </div>
-                    </div>
-                    <div className="row flex-row justify-content-center align-items-end">
-                      <div className="col-6">
-                        <div className='form-group'>
-                          <label for="To" class="form-label mt-4">To</label>
-                          <input type="text" id="To" className="form-control" placeholder='0.0' onChange={(e)=>{setBscToken(e.target.value)}}/>
-                        </div>
-                      </div>
-                      <div className="col-6">
-                        <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Chain</button>
-                        </div>
-                      </div> 
-                    </div> 
-                    <div className="row flex-row justify-content-center align-items-end">
-                      <div className="col-6">
-                        <div className='form-group'>
-                          <label for="Fee" class="form-label mt-4">Fee</label>
-                          <input type="text" id="Fee" className="form-control" placeholder='0.0' onChange={(e)=>{setFee(e.target.value)}}/>
-                        </div>
-                      </div>
-                      <div className="col-6">
-                        <div className='row flex-row justify-content-center'>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Token</button>
-                          <button type="button" class="btn btn-outline-primary col-5 mx-3">Select Chain</button>
-                        </div>
-                      </div>
+
+                      {tokenReserves?<>
+            {tokenReserves>0?<><div className="my-2">
+            
+            <div className="d-flex mx-4 p-2">
+              <h4>{chainIdW==0x13881?"MUMBAI ":"BSC "}: </h4>
+              
+            </div>
+
+            <div className="d-flex mx-4 p-2">
+              
+              <div className="dropdown mx-2">
+                <h4>Total User balance</h4>
+                <p>{useRemainings?useRemainings:<></>}</p>
+              </div>
+            </div>
+            <div className="d-flex mx-4 p-2">
+              
+              <div className="dropdown mx-2">
+                <h4>Total Actual Reserves</h4>
+                <p>{tokenReserves?tokenReserves:<></>}</p>
+              </div>
+            </div>
+            <div className="d-flex mx-4 p-2">
+              
+             
+            </div>
+            </div> 
+            <div className="dropdown mx-2">
+                
+
+                </div>
+             </>:<p>This Token is not allowed on this blockchain</p>}</>:<></>}
                     </div>
                      
                     <div className='row flex-row justify-content-center mt-5 mb-3'>
-                    {
-                      walletAddress.length > 0 ? 
-                      (
-                        <>
-                          <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => { addTokenToBlockchain(mumbaiToken, bscToken, fee); }}>Deposit</button>
-                        </>
-                      ) 
-                      : 
-                      (
-                        <>
-                          <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => { connectWallet(); }}>Connect Wallet</button>
-                        </>
-                      )}
+                    {walletAddress.length > 0 ? (
+              <>
+                {
+                  tokenReserves?
+                  <button 
+        type="button" className="btn btn-primary btn-lg btn-block rounded-pill shadow-3-strong"
+          onClick={() => {
+            getRemainingBalances(chainIdW,tokenNameW)
+            
+          }}
+        
+          > <span> WithDraw </span></button>:<button 
+          type="button" className="btn btn-primary btn-lg btn-block rounded-pill shadow-3-strong"
+            onClick={() => {
+              
+            }} disabled
+          
+            > <span> WithDraw </span></button>
+
+                }
+          
+          </>
+            ) : (
+              <>
+                <button
+                  type="button" className="btn btn-primary btn-lg btn-block rounded-pill shadow-3-strong"
+                  onClick={() => {
+                    connectWallet();
+                   
+                  }}
+                >
+                  <span>CONNECT WALLET</span>
+                </button>
+              </>
+            )}
                     </div>
                   
                   </div>
@@ -179,6 +361,175 @@ function UseBridge() {
         </div>
       
       </div>
+      <div className="modal fade" id="get" tabindex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Token</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                <div class="form-group">
+                  <label class="form-label">Search</label>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                </div>
+                <div class="d-flex flex-column my-3">
+                {BridgeTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setTokenName(token.address);setSwapToken0Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                        <p className='mb-0'>{token.chain}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="modal fade" id="send" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Blockchain</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                
+                <div class="d-flex flex-column my-3">
+                  {Blockchains.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setchainId(token.chain);setswapChain0Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                  
+                  
+                  
+                  
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div className="modal fade" id="getW" tabindex="-1" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Token</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#getW">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                <div class="form-group">
+                  <label class="form-label">Search</label>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                </div>
+                <div class="d-flex flex-column my-3">
+                {BridgeTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#getW" onClick={()=>{setTokenNameW(token.address);setSwapToken1Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                        <p className='mb-0'>{token.chain}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div className="modal fade" id="sendW" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title">Choose Blockchain</h5>
+              <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#sendW">
+                <span aria-hidden="true"></span>
+              </button>
+            </div>
+            <div className="modal-body">
+              <div className='row justify-content-center'>
+                
+                <div class="d-flex flex-column my-3">
+                  {Blockchains.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#sendW" onClick={()=>{setchainIdW(token.chain);setswapChain1Name(token.token)}}>
+                    <div className='row align-items-center'>
+                      <div className='col-2'>
+                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                      </div>
+                      <div className='col-10'>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
+                      </div>
+                    </div>
+                  </button>
+
+
+
+                  ))}
+                  
+                  
+                  
+                  
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+
     </div>
   )
 }

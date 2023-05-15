@@ -10,7 +10,7 @@ import quoter from "./qouter_abi.json";
 import cyt from "./CYT_abi.json";
 import nftmanager from "./NFTManager_abi.json";
 import bridgeabi from "./bridge_abi.json";
-export const chainId = 80001;
+export const chainId = 0x13881;
 export const BSCchainid = 0x61;
 
 export const DMATICAddress = "0xA6aC846d1B4554006bC2221f58B597688cB18C91";

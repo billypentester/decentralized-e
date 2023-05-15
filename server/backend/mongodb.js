@@ -10,13 +10,14 @@ var url="wss://polygon-mumbai.g.alchemy.com/v2/MXTlA2FpRDF3lP5pMRFjWA8C-o-Khq8b"
 const web3=new Web3(url);
 const TokenABI = require("../ABI/TokenABI.json")
 const NFTManagerABI = require("../ABI/ManagerABI.json")
-mongoose.connect('mongodb://0.0.0.0:27017/HalalSwap').then(
+mongoose.connect('mongodb://localhost:27017/HalalSwap').then(
     console.log('connected')
 )
 
 const TokenSchema=require('./TokenSchema')
 const PoolSchema=require('./PoolSchema')
-
+const BridgePositionSchemaMUM=require('./BridgePositionSchemaMUM')
+const BridgePositionSchemaBSC=require('./BridgePositionSchemaBSC')
 app.use(cors())
 app.use(express.json())
 
@@ -232,30 +233,36 @@ app.get('/GetPositions/:address',async (req,res)=>{
        
       {
         arr[i] = await contract.methods.tokenOfOwnerByIndex(address,i).call();
-        console.log("aarr",arr[i])
-        pos[i]=await contract.methods.positions(Number(i+1)).call();
-        console.log("pos[i]",pos[i])
+        // console.log("aarr",arr[i])
+        pos[i]=await contract.methods.positions(Number(arr[i])).call();
+        // console.log("pos[i]",pos[i])
         const contract0= new web3.eth.Contract(TokenABI,pos[i].token0);
         const contract1= new web3.eth.Contract(TokenABI,pos[i].token1);
         let tick0 = pos[i].tickLower;
         let tick1 = pos[i].tickUpper;
-        let mysqrtpricex961 = 1.0001 ** (tick0 / 2) * 2 ** 96;
-        let mysqrtpricex962 = 1.0001 ** (tick1 / 2) * 2 ** 96;
-        let price0 = Number((Number(mysqrtpricex961) / 2 ** 96) ** 2).toLocaleString(
-            "fullwide",
-            {
-              useGrouping: false,
-            }
-          );
-        let price1 = Number((Number(mysqrtpricex962) / 2 ** 96) ** 2).toLocaleString(
-            "fullwide",
-            {
-              useGrouping: false,
-            }
-          );
-        const name0= await contract0.methods.name().call()
-        const name1= await contract1.methods.name().call()
-        data[i]={...pos[i],name0:name0,name1:name1,priceLower:price0,priceUpper:price1}
+        console.log(tick0,tick1,"values")
+        let minSqrtPrice = (
+          1.0001 ** (tick0 / 2) *
+          2 ** 96
+        ).toLocaleString("fullwide", {
+          useGrouping: false,
+        });
+        let maxSqrtPrice = (
+          1.0001 ** (tick1 / 2) *
+          2 ** 96
+        ).toLocaleString("fullwide", {
+          useGrouping: false,
+        });
+        
+        let Minprice = Number((Number(minSqrtPrice) / 2 ** 96) ** 2).toLocaleString("fullwide", {
+          useGrouping: false,
+        });;
+      let Maxprice = Number((Number(maxSqrtPrice) / 2 ** 96) ** 2).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
+        const symbol0= await contract0.methods.symbol().call()
+        const symbol1= await contract1.methods.symbol().call()
+        data[i]={...pos[i],symbol0:symbol0,symbol1:symbol1,priceLower:Minprice,priceUpper:Maxprice}
         
         
         // setPositions(prevData => [...prevData, {...pos[i],name0:name0,name1:name1}])
@@ -271,7 +278,61 @@ app.get('/GetPositions/:address',async (req,res)=>{
    
 })
 
+app.post('/MumPosition',async(req,res)=>{
+  const exist0=await BridgePositionSchemaMUM.findOne({user:req.body.user,token:req.body.token})
+  let data
+  if(exist0){
+    let amount = Number(exist0.amount + req.body.amount)
+    let update={user:req.body.user,token:req.body.token,amount:amount}
+     data =await BridgePositionSchemaMUM.findByIdAndUpdate(exist0._id,update,{
+      new:true
+     })
+  }else{
+     data=await BridgePositionSchemaMUM.create(req.body)
 
+  }
+  
+    
+  
+  
+ 
+  
+  res.json({data,code:201})
+});
+
+app.post('/BscPosition',async(req,res)=>{
+    
+  const exist0=await BridgePositionSchemaBSC.findOne({user:req.body.user,token:req.body.token})
+  let data
+  if(exist0){
+    let amount = Number(exist0.amount) + Number(req.body.amount)
+    let update={user:req.body.user,token:req.body.token,amount:amount}
+     data =await BridgePositionSchemaBSC.findByIdAndUpdate(exist0._id,update,{
+      new:true
+     })
+  }else{
+     data=await BridgePositionSchemaBSC.create(req.body)
+
+  }
+  res.json({data,code:201})
+});
+
+app.get('/GetMumPositions/:address',async (req,res)=>{
+  const address = req.params.address;
+  const data=await BridgePositionSchemaMUM.find({user:address})
+ 
+  // console.log(data)
+  res.json({data})
+ 
+})
+app.get('/GetBscPositions/:address',async (req,res)=>{
+  const address = req.params.address;
+  const data=await BridgePositionSchemaBSC.find({user:address})
+ 
+  // console.log(data)
+  res.json({data})
+ 
+})
 
 
 app.listen(5000,()=>{console.log("listening")})

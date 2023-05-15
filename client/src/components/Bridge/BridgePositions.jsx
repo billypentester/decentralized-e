@@ -6,8 +6,8 @@ import { Link } from 'react-router-dom'
 import { Token1Context } from "../../contexts/Token1Context";
 import { i } from 'mathjs';
 
-function PoolLiquidity() {
-  const {  walletAddress,getManagerContract,getTokenContracts,formatNumber ,chechkChain} = useContext(Token1Context);
+function BridgePositions() {
+  const {  walletAddress,getManagerContract,getTokenContracts,formatNumber } = useContext(Token1Context);
   const [totalPositions,setTotalPositions]=useState(0)
   const [positions,setPositions]=useState([])
 // async function getBalance(){
@@ -65,7 +65,6 @@ async function getPositions(){
 
 }
 useEffect(()=>{
-  chechkChain()
 getPositions()
 
 },[walletAddress])
@@ -133,4 +132,4 @@ getPositions()
   )
 }
 
-export default PoolLiquidity
+export default BridgePositions

@@ -1,7 +1,7 @@
 import Seo from './Utilities/Seo'
 import React, {useState, useEffect, useContext} from 'react'
 import { Token1Context } from "../contexts/Token1Context";
-
+import inputTokens from '../data/inputTokens'
 function Swap() {
   const {
     Swap,
@@ -22,6 +22,10 @@ function Swap() {
   const [boolean, setBoolean] = useState(true);
   const [check, setCheck] = useState();
   const [slippageVal, setSlippageVal] = useState(0);
+  const [swapToken0, setSwapToken0] = useState();
+  const [swapToken1, setSwapToken1] = useState();
+  const [swapToken0Name, setSwapToken0Name] = useState("Select");
+  const [swapToken1Name, setSwapToken1Name] = useState("Select");
   useEffect(() => {
     Seo({
       title: "Swap",
@@ -34,7 +38,7 @@ function Swap() {
       <div class="card shadow-lg col-md-6 col-lg-5 rounded-3 border border-end-0 border-start-0 border-top-0 border-3 ">
         <div class="card-header h4 text-center">Swap</div>
         <div class="card-body">
-
+{console.log(swapToken1,swapToken1Name)}
           <div className='row justify-content-center'>
 
             <div className='row flex-row justify-content-center align-items-end'>
@@ -46,13 +50,14 @@ function Swap() {
                     onChange={(e) => {
                       setToken1(e.target.value);
                       setEstimatedValue1(e.target.value);
-                      quoter(e.target.value,1);
+                      {swapToken0 && swapToken1?quoter(e.target.value,1,swapToken0,swapToken1):<></>}
+                      
                     }}
                   />
                 </div>  
               </div>
               <div className='col-3'>
-                <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#send">ETH</button>
+                <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#send">{swapToken0Name}</button>
               </div>
             </div>
 
@@ -65,13 +70,12 @@ function Swap() {
                     onChange={(e) => {
                       setToken1(e.target.value);
                       setEstimatedValue(e.target.value);
-                      quoter(e.target.value, 2);
-                    }}
+                      {swapToken0 && swapToken1?quoter(e.target.value,2,swapToken0,swapToken1):<></>}                   }}
                   />
                 </div>  
               </div>
               <div className='col-3'>
-                <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#get">ETH</button>
+                <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#get">{swapToken1Name}</button>
               </div>
             </div>
 
@@ -81,7 +85,7 @@ function Swap() {
                 (
                   <>
                     {console.log(boolean, r1)}
-                    <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => {Swap(token1, boolean, r1)}}>Swap</button>
+                    <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => {Swap(token1, boolean, r1,swapToken0,swapToken1)}}>Swap</button>
                   </>
                 )
                 :
@@ -114,61 +118,27 @@ function Swap() {
                   <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
                 </div>
                 <div class="d-flex flex-column my-3">
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
+                  {inputTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setSwapToken0(token.address);setSwapToken0Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
                         <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
                       </div>
                     </div>
                   </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
+
+
+
+                  ))}
+                  
+                  
+                  
+                  
+                  
                 </div>
               </div>
             </div>
@@ -192,61 +162,22 @@ function Swap() {
                   <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
                 </div>
                 <div class="d-flex flex-column my-3">
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
+                {inputTokens.map((token,index)=>(
+                    <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setSwapToken1(token.address);setSwapToken1Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
                         <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
+                        <h5 className='mb-0'>{token.name}</h5>
+                        <p className='mb-0'>{token.token}</p>
                       </div>
                     </div>
                   </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
-                  <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
-                    <div className='row align-items-center'>
-                      <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
-                      </div>
-                      <div className='col-10'>
-                        <h5 className='mb-0'>Uniswap</h5>
-                        <p className='mb-0'>UNI</p>
-                      </div>
-                    </div>
-                  </button>
+
+
+
+                  ))}
                 </div>
               </div>
             </div>
