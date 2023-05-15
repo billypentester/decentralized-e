@@ -32,7 +32,7 @@ function CreatePool() {
   const [token0, setToken0] = useState();
   const [token1, setToken1] = useState();
   const [fee, setFee] = useState();
-  const [pRatio, setPRatio ]= useState(1);
+  const [pRatio, setPRatio ]= useState(2);
   
   const [token0Amount, setToken0Amount]=useState()
   const [token1Amount, setToken1Amount]=useState()
@@ -156,15 +156,7 @@ useEffect(()=>{
                     
                     <h5 class="card-title text-start mx-4 p-2"></h5>
                     <div className="d-flex flex-column mx-4 mb-3 px-4 bg-light h-100">
-                      <svg class="range-svg" viewBox="0 0 500 100">
-                        <rect class="range-track" x="25" y="45" width="450" height="10" rx="5" />
-                        <circle draggable class="range-handle range-handle--left" cx={position.x} cy="50" r="12" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave} />
-                        <circle class="range-handle range-handle--right" cx="475" cy="50" r="12" />
-                        <rect class="range-selection" x="25" y="45" width="450" height="10" rx="5" />
-                      </svg>
-                    </div>
-                    
-                    {/* {
+                    {
                       intializedVar ? 
                       <></>
                       :
@@ -184,7 +176,10 @@ useEffect(()=>{
                           </div>
                         </div>
                       </div>
-                    } */}
+                    }
+                    </div>
+                    
+                    
                     
                     {
                       intializedVar?

@@ -299,6 +299,11 @@ export default function TokenProvider({ children }) {
       // const amount = web3.utils.fromWei(amounts, "ether");
 
       // console.log(quoterContract);
+      console.log(token0,"ok",
+        token1,"ok",
+        3000,"ok",
+        amount,"ok"
+        )
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
           token0,
@@ -336,6 +341,11 @@ export default function TokenProvider({ children }) {
       // const amount = web3.utils.fromWei(amounts, "ether");
 
       // console.log(quoterContract);
+      console.log(token1,"ok",
+        token0,"ok",
+        3000,"ok",
+        amount,"ok"
+        )
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
           token1,

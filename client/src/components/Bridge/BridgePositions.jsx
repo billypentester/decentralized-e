@@ -5,10 +5,12 @@ import { Link } from 'react-router-dom'
 
 import { Token1Context } from "../../contexts/Token1Context";
 import { i } from 'mathjs';
+import Switch from '@mui/material/Switch';
+const label = { inputProps: { 'aria-label': 'Switch demo' } };
 
-function BridgePositions() {
-  const {  walletAddress,getManagerContract,getTokenContracts,formatNumber } = useContext(Token1Context);
-  const [totalPositions,setTotalPositions]=useState(0)
+function PoolLiquidity() {
+  const {  walletAddress,getManagerContract,getTokenContracts,formatNumber ,chechkChain} = useContext(Token1Context);
+  const [bool,setbool]=useState(false)
   const [positions,setPositions]=useState([])
 // async function getBalance(){
 //   try{
@@ -48,8 +50,9 @@ function BridgePositions() {
 async function getPositions(){
   if(walletAddress.length>0){
     try{
-      const data = await fetch(`http://localhost:5000/GetPositions/${walletAddress}`)
-      data=data.json().then((data)=>{console.log(data.data);setPositions((data.data));})
+      console.log(walletAddress)
+      const data = await fetch(`http://localhost:5000/GetMumPositions/${walletAddress}`)
+      data=data.json().then((data)=>{console.log(data);setPositions((data.data));})
   
     }catch(err){
 
@@ -57,17 +60,43 @@ async function getPositions(){
 
   }
   
-
-      
-
-
-
-
 }
+
+
+
+async function getPositions1(){
+  if(walletAddress.length>0){
+    try{
+      console.log(walletAddress)
+      const data = await fetch(`http://localhost:5000/GetBscPositions/${walletAddress}`)
+      data=data.json().then((data)=>{console.log(data);setPositions((data.data));})
+  
+    }catch(err){
+
+    }
+
+  }
+  
+}
+
+async function tryit(bool){
+  if(bool){
+    getPositions()
+
+  }else{
+    getPositions1()
+  }
+}
+
 useEffect(()=>{
+  chechkChain()
 getPositions()
 
 },[walletAddress])
+useEffect(()=>{
+  tryit(bool)
+
+},[bool])
 
 
 
@@ -79,12 +108,14 @@ getPositions()
         <button type="button" class="btn btn-primary">
           <Link to="/pools/create" className="text-white">New Position</Link>
         </button>
+        <Switch {...label} onClick={()=>{setbool(!bool)}}/>
       </div>
 
       <div className="d-flex justify-content-center align-items-center py-2">
 
         <div class="card text-center shadow-lg col-md-6 col-lg-7 rounded-0 border border-end-0 border-start-0 border-top-0 border-3 border-primary">
-          <h5 class="card-header h4">Your Position ({positions?.length})</h5>
+          <h5 class="card-header h4">Your Positions ({positions?.length})</h5>
+          
           <div class="card-body">
             {positions?<>
             {positions.map((item,index)=>(
@@ -94,13 +125,13 @@ getPositions()
                   <div className="d-flex align-items-center my-3">
                     {/* <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/1027.png" alt="ETH" className="img-fluid" style={{ width:'30px' }} />
                     <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/4943.png" alt="UNI" className="img-fluid" style={{ width:'30px' }} /> */}
-                    <span className="mx-2 h5 my-0">{item.symbol0}/{item.symbol1}</span>
-                    <span className="mx-2 h5 my-0">{Number(item.fee/10000)}%</span>
+                    <span className="mx-2 h5 my-0">{item.name}   {item.symbol}</span>
+                    <span className="mx-2 h5 my-0">{Number(item.fee)}%</span>
                   </div>
                   <button type="button" class="btn btn-primary mx-2">Deposit</button>
                 </div>
-                <span className="h5">Min: {item.priceLower} {item.symbol0} per {item.symbol1} </span ><br></br>
-                <span className="h5"> Max: {item.priceUpper>1000000?formatNumber(Number(item.priceUpper)):item.priceUpper} {item.symbol0} per {item.symbol1} </span >
+                <span className="h5">Amount: {item.amount} </span ><br></br>
+                <span className="h5"> Token Address: {item.token}  </span >
               </div>
             </Link>
             
@@ -132,4 +163,4 @@ getPositions()
   )
 }
 
-export default BridgePositions
+export default PoolLiquidity

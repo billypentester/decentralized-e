@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext ,useEffect} from 'react'
 import { BridgeContext } from "../../contexts/BridgeContext";
 import { Token1Context } from '../../contexts/Token1Context';
 import {
@@ -42,7 +42,7 @@ function BridgeLiquidity() {
   const [chainId,setchainId]=useState()
   const [tokenFee,setTokenFee]=useState()
   const [tokenSupply,setTokenSupply]=useState()
-  
+  const [check,setcheck]=useState(false)
 async function getTokenCredentials(mum,token){
   let contract
   let TokenContract
@@ -63,21 +63,28 @@ async function getTokenCredentials(mum,token){
   const allowed=await contract.methods.allowedTokens(token).call()
   const paused=await contract.methods.pausedTokens(token).call()
   if(allowed==1 && paused==0){
-    const fee= await contract.methods.FeeForToken(token).call()
-    setTokenFee(fee)
+    const decimals = await TokenContract.methods.decimals().call()
+    let fee= await contract.methods.totalActualReservesForTokens(token).call()
+    fee=(fee / 10 ** decimals).toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    
     let Supply= await contract.methods.totalTokensSupply(token).call()
     
-    const decimals = await TokenContract.methods.decimals().call()
+    
     Supply = (Supply / 10 ** decimals).toLocaleString("fullwide", {
       useGrouping: false,
     });
+    setTokenFee(fee)
     setTokenSupply(Supply)
+    setcheck(true)
 
 
     
   }
   else{
     setTokenFee(-1)
+    setcheck(false)
 
   }
   
@@ -116,7 +123,10 @@ async function getTokenCredentials(mum,token){
     setIsDragging(false);
   };
 
-
+  useEffect(()=>{
+    getTokenCredentials(chainId,tokenName)
+  
+  },[tokenName,chainId])
   return (
     <div class="container" style={{ marginTop:'7rem' }}>
       <div className="bg-secondary d-flex justify-content-center align-items-center py-5">
@@ -150,11 +160,16 @@ async function getTokenCredentials(mum,token){
 
                   <div className="row">
                     <label for="DepositedAmmount" class="form-label mt-4">Deposited Ammount</label>
-                    <input type="text" id="form12" className="form-control form-control-lg border-0 px-4 rounded-pill shadow-3-strong mx-3" placeholder='0.0' onChange={(e)=>{ 
+                    {check?<input type="text" id="form12" className="form-control form-control-lg border-0 px-4 rounded-pill shadow-3-strong mx-3" placeholder='0.0' onChange={(e)=>{ 
                       setTokenValue(e.target.value);
                       console.log(tokenValue);
 
-                    }}/> </div>
+                    }}/>:<input type="text" id="form12" disabled className="form-control form-control-lg border-0 px-4 rounded-pill shadow-3-strong mx-3" placeholder='0.0' onChange={(e)=>{ 
+                      setTokenValue(e.target.value);
+                      console.log(tokenValue);
+
+                    }}/>}
+                     </div>
 
                   <div className='row'>
                     <div class="form-group">
@@ -166,14 +181,13 @@ async function getTokenCredentials(mum,token){
                 </div>
 
                 <div className='row flex-column col-6'>
-                    <div className='h-100 d-flex flex-column mx-4 mb-3 px-4 bg-light'>
-                      <svg class="range-svg" viewBox="0 0 500 100">
-                        <rect class="range-track" x="25" y="45" width="450" height="10" rx="5" />
-                        <circle draggable class="range-handle range-handle--left" cx={position.x} cy="50" r="12" onMouseDown={handleMouseDown} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onMouseLeave={handleMouseLeave} />
-                        <circle class="range-handle range-handle--right" cx="475" cy="50" r="12" />
-                        <rect class="range-selection" x="25" y="45" width="450" height="10" rx="5" />
-                      </svg>
+                    <div className='h-100 d-flex flex-column mx-4 mb-3 px-4 bg-light' >
+                    <h4 >Total Actual Reserves</h4>
+                    <p>{check?tokenFee:<></>}</p>
+                    <h4 >Total Liquidity Supply</h4>
+                    <p>{check?tokenSupply:<></>}</p>
                     </div>
+                   
                 </div>
 
               </div>
