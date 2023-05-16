@@ -2,7 +2,24 @@ import Seo from './Utilities/Seo'
 import React, {useState, useEffect, useContext} from 'react'
 import { Token1Context } from "../contexts/Token1Context";
 import inputTokens from '../data/inputTokens'
+import Popup from '../utils/Popup';
+
 function Swap() {
+
+  const [showModal, setShowModal] = useState(false);
+
+  const openModal = () => {
+    setShowModal(!showModal);
+  };
+
+  const closeModal = () => {
+    setShowModal(false);
+  };
+
+  const hideModal = () => {
+    setShowModal(false);
+  };
+
   const {
     Swap,
     connectWallet,
@@ -37,8 +54,9 @@ function Swap() {
     <div className="bg-secondary d-flex justify-content-center flex-column align-items-center" style={{height:'100vh'}}>
       <div class="card shadow-lg col-md-6 col-lg-5 rounded-3 border border-end-0 border-start-0 border-top-0 border-3 ">
         <div class="card-header h4 text-center">Swap</div>
+        <button type="button" class="btn btn-outline-primary w-100" onClick={openModal}>Select Tokens</button>
         <div class="card-body">
-{console.log(swapToken1,swapToken1Name)}
+          {console.log(swapToken1,swapToken1Name)}
           <div className='row justify-content-center'>
 
             <div className='row flex-row justify-content-center align-items-end'>
@@ -131,14 +149,8 @@ function Swap() {
                     </div>
                   </button>
 
-
-
                   ))}
-                  
-                  
-                  
-                  
-                  
+                
                 </div>
               </div>
             </div>
@@ -175,8 +187,6 @@ function Swap() {
                     </div>
                   </button>
 
-
-
                   ))}
                 </div>
               </div>
@@ -184,8 +194,10 @@ function Swap() {
           </div>
         </div>
       </div>
-      
 
+      {
+        showModal && <Popup setShowModal={hideModal} title="Swap" message="Swap Successful" type="success" />
+      }
 
 
     </div>
