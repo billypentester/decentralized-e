@@ -54,7 +54,6 @@ function Swap() {
     <div className="bg-secondary d-flex justify-content-center flex-column align-items-center" style={{height:'100vh'}}>
       <div class="card shadow-lg col-md-6 col-lg-5 rounded-3 border border-end-0 border-start-0 border-top-0 border-3 ">
         <div class="card-header h4 text-center">Swap</div>
-        <button type="button" class="btn btn-outline-primary w-100" onClick={openModal}>Select Tokens</button>
         <div class="card-body">
           {console.log(swapToken1,swapToken1Name)}
           <div className='row justify-content-center'>
