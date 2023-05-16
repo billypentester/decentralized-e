@@ -16,7 +16,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.5.0",
     "react-scripts": "^5.0.1",
-    "react-spinners": "^0.13.7",
+    "react-spinners": "^0.13.8",
     "sweetalert": "^2.1.2",
     "wagmi": "^1.0.2",
     "web3": "^1.10.0"

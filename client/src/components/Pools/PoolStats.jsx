@@ -2,6 +2,7 @@ import React, {useEffect, useState,useContext} from 'react'
 import { useParams } from 'react-router-dom'
 import pools from './../../data/pools'
 import { Link, useNavigate } from 'react-router-dom'
+import Loader from './../../utils/Loader'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -33,6 +34,7 @@ function PoolStats() {
   const [PoolTrans,setPoolTrans]=useState()
   const navigate = useNavigate();
   const [RemainingPoolTrans,setRemainingPoolTrans]=useState();
+  const [loading, setLoading] = useState(false);
 
   const handleRowClick = (e) => {
     const id = e.currentTarget.id;
@@ -75,9 +77,6 @@ function PoolStats() {
       var data=response.json().then((data)=>{console.log(data.data);setPool(data)
       setArr((data.data.name).split("/"))})
       console.log(data.data)
-      
-      
-      
     }catch(err){
       console.log(err)
   
@@ -86,9 +85,11 @@ function PoolStats() {
   }
   async function getPoolTransactions(address){
     try{
+      setLoading(true);
       var response=await fetch(`http://localhost:5000/PoolTransactions/${address}`)
       var data=response.json().then((data)=>{console.log(data.data.result);setPoolTrans((data.data.result).slice(0,10));setRemainingPoolTrans(data.data.result);setbool(true)})
       console.log(data.data)
+      setLoading(false);
     }catch(err){
       console.log(err)
 
@@ -130,7 +131,10 @@ function PoolStats() {
 
   return (
     <div style={{ marginTop:'4rem' }}>
-{Pool?<>
+      {
+        loading && <Loader />
+      }
+    {Pool?<>
       <div className="bg-light shadow-2-strong">
         <div className="p-5 container h-25">
           <div className="d-flex justify-content-between">
@@ -148,14 +152,13 @@ function PoolStats() {
               </button>
             </div>
           </div>
+          <div className="cont row justify-content-between flex-row mt-5">
+            <div className="col-5 text-start">
+              <h5 className="lead">Pool Address</h5>
+              <h6>{Pool.data.pool}</h6>
+            </div>              
+          </div>
         </div>
-        <div className="d-flex align-items-center">
-              <h4>Pool Address</h4>
-              <a>{Pool.data.pool}</a>
-             
-              
-              
-            </div>
       </div>
       
 
@@ -186,7 +189,7 @@ function PoolStats() {
             <div className='col-12 my-3'>
               <div className='bg-primary p-3 mx-3 rounded-2 text-light shadow-4-strong'>
                 <div className='d-flex flex-column text-center'>
-                  <h3>{Pool.data.tickSpacing}</h3>
+                  <h3 className="text-white">{Pool.data.tickSpacing}</h3>
                   <span>Tick Spacing</span>
                 </div>
               </div>
@@ -197,7 +200,7 @@ function PoolStats() {
               <div className='col-6 my-3'>
                 <div className='bg-primary p-3 mx-3 rounded-2 text-light shadow-4-strong'>
                   <div className='d-flex flex-column text-center'>
-                    <h3>{formatNumber((Pool.amount0/10**Pool.decimal0).toLocaleString(
+                    <h3 className="text-white">{formatNumber((Pool.amount0/10**Pool.decimal0).toLocaleString(
         "fullwide",
         {
           useGrouping: false,
@@ -211,7 +214,7 @@ function PoolStats() {
               <div className='col-6 my-3'>
                 <div className='bg-primary mx-3 p-3 rounded-2 text-light shadow-4-strong'>
                   <div className='d-flex flex-column text-center'>
-                    <h3>{formatNumber((Pool.amount1/10**Pool.decimal1).toLocaleString(
+                    <h3 className="text-white">{formatNumber((Pool.amount1/10**Pool.decimal1).toLocaleString(
         "fullwide",
         {
           useGrouping: false,
@@ -319,10 +322,10 @@ function PoolStats() {
           </table>
           
           :<></>}
-          <button onClick={ ()=>{ changeNext(10)}}>{">>"}</button>
-          <br></br>
-          <br></br>
-          <button onClick={ ()=>{ changeNext(-10)}}>{"<<"}</button>
+          <div className="d-flex justify-content-center">
+            <button className="btn btn-primary mx-2" onClick={ ()=>{ changeNext(-10)}}>{"<<"}</button>
+            <button className="btn btn-primary mx-2" onClick={ ()=>{ changeNext(10)}}>{">>"}</button>
+          </div>
 
       </div></>:<></>}
       

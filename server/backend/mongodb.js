@@ -8,9 +8,12 @@ const chain = EvmChain.MUMBAI;
 const Web3  = require("web3");
 var url="wss://polygon-mumbai.g.alchemy.com/v2/MXTlA2FpRDF3lP5pMRFjWA8C-o-Khq8b";
 const web3=new Web3(url);
+var BSCurl="wss://solemn-icy-sunset.bsc-testnet.discover.quiknode.pro/146f42549cf179d7117ec11c84476907a4fa7edd/"
+const web3Bsc= new Web3(BSCurl)
+
 const TokenABI = require("../ABI/TokenABI.json")
 const NFTManagerABI = require("../ABI/ManagerABI.json")
-mongoose.connect('mongodb://localhost:27017/HalalSwap').then(
+mongoose.connect('mongodb://0.0.0.0:27017/HalalSwap').then(
     console.log('connected')
 )
 
@@ -281,14 +284,18 @@ app.get('/GetPositions/:address',async (req,res)=>{
 app.post('/MumPosition',async(req,res)=>{
   const exist0=await BridgePositionSchemaMUM.findOne({user:req.body.user,token:req.body.token})
   let data
+  const contract= new web3.eth.Contract(TokenABI,req.body.token);
+  const name=await contract.methods.name().call()
+  const symbol=await contract.methods.symbol().call()
   if(exist0){
     let amount = Number(exist0.amount + req.body.amount)
-    let update={user:req.body.user,token:req.body.token,amount:amount}
+    let update={user:req.body.user,token:req.body.token,amount:amount,fee:req.body.fee,name:name,symbol:symbol}
      data =await BridgePositionSchemaMUM.findByIdAndUpdate(exist0._id,update,{
       new:true
      })
   }else{
-     data=await BridgePositionSchemaMUM.create(req.body)
+    let update={user:req.body.user,token:req.body.token,amount:req.body.amount,name:name,symbol:symbol,fee:req.body.fee}
+     data=await BridgePositionSchemaMUM.create(update)
 
   }
   
@@ -304,14 +311,19 @@ app.post('/BscPosition',async(req,res)=>{
     
   const exist0=await BridgePositionSchemaBSC.findOne({user:req.body.user,token:req.body.token})
   let data
+  const contract= new web3Bsc.eth.Contract(TokenABI,req.body.token);
+  const name=await contract.methods.name().call()
+  const symbol=await contract.methods.symbol().call()
   if(exist0){
     let amount = Number(exist0.amount) + Number(req.body.amount)
-    let update={user:req.body.user,token:req.body.token,amount:amount}
+    console
+    let update={user:req.body.user,token:req.body.token,amount:amount,name:name,symbol:symbol,fee:fee}
      data =await BridgePositionSchemaBSC.findByIdAndUpdate(exist0._id,update,{
       new:true
      })
   }else{
-     data=await BridgePositionSchemaBSC.create(req.body)
+    let update={user:req.body.user,token:req.body.token,amount:req.body.amount,name:name,symbol:symbol,fee:fee}
+     data=await BridgePositionSchemaBSC.create(update)
 
   }
   res.json({data,code:201})
@@ -319,7 +331,8 @@ app.post('/BscPosition',async(req,res)=>{
 
 app.get('/GetMumPositions/:address',async (req,res)=>{
   const address = req.params.address;
-  const data=await BridgePositionSchemaMUM.find({user:address})
+  const regexPattern = new RegExp(address, 'i');
+  const data=await BridgePositionSchemaMUM.find({user:regexPattern})
  
   // console.log(data)
   res.json({data})
@@ -327,7 +340,8 @@ app.get('/GetMumPositions/:address',async (req,res)=>{
 })
 app.get('/GetBscPositions/:address',async (req,res)=>{
   const address = req.params.address;
-  const data=await BridgePositionSchemaBSC.find({user:address})
+  const regexPattern = new RegExp(address, 'i');
+  const data=await BridgePositionSchemaBSC.find({user:regexPattern })
  
   // console.log(data)
   res.json({data})

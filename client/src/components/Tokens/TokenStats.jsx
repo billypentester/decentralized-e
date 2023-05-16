@@ -267,10 +267,11 @@ async function getTokenData(address){
               }
             </tbody>
           </table>
-          <button onClick={ ()=>{ changeNext(10)}}>{">>"}</button>
-          <br></br>
-          <br></br>
-          <button onClick={ ()=>{ changeNext(-10)}}>{"<<"}</button>
+          <div className="d-flex justify-content-center">
+            <button className="btn btn-primary mx-2" onClick={ ()=>{ changeNext(-10)}}>{"<<"}</button>
+            <button className="btn btn-primary mx-2" onClick={ ()=>{ changeNext(10)}}>{">>"}</button>
+          </div>
+          
 
 
       </div></>

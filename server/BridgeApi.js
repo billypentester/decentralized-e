@@ -96,10 +96,11 @@ contractBsc.events.LiquidityAdded({}, 'latest')
   const { user, token, amount} = event.returnValues;
   console.log(event.returnValues);
   console.log(user, token, amount)
+  const fee=await contractBsc.methods.FeeForToken(token)
   try{
     var response=await fetch("http://localhost:5000/BscPosition",{
         method:"POST",
-        body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount}),
+        body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount,fee:fee}),
         headers:{"Content-Type":"application/json"}
     })
     console.log(response.status)
@@ -123,10 +124,11 @@ contractMum.events.LiquidityAdded({}, 'latest')
     const { user, token, amount } = event.returnValues;
     console.log(event.returnValues);
   console.log(user, token, amount)
+  const fee=await contractMum.methods.FeeForToken(token)
     try{
       var response=await fetch("http://localhost:5000/MumPosition",{
           method:"POST",
-          body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount}),
+          body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount,fee:fee}),
           headers:{"Content-Type":"application/json"}
       })
       console.log(response.status)

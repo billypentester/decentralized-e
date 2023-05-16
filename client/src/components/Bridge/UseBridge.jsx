@@ -211,38 +211,33 @@ useEffect(()=>{
                       {tokenFee?<>
             {tokenFee>0?<><div className="my-2">
             
-            <div className="d-flex mx-4 p-2">
-              <h4>{chainId==0x13881?"BSC ":"MUMBAI "}: Token {secondTokenSymbol?secondTokenSymbol:<></>}:</h4>
-
-
-              <div className="dropdown mx-2">
-              <p>{secondTOken?secondTOken:<></>}</p>
-                
+            <div className="d-flex mx-4 my-2 p-3 bg-light rounded-3">
+              <strong className="mb-0 h4"> 
+                {chainId==0x13881?"BSC":"MUMBAI"}: Token {secondTokenSymbol && secondTokenSymbol}:
+              </strong>
+              <p className='mb-0 lead'>{secondTOken?secondTOken:<></>}</p>
+            </div>
+            <div className="d-flex justify-content-between align-items-center mx-4 my-2 p-3 bg-light rounded-3">
+              <div className='d-flex flex-column'>
+                <h4>{tokenSupply?tokenSupply:<></>}</h4>
+                <p className="mb-0">Total Actual Reserve</p>
               </div>
-              
+              <img width="60" height="60" src="https://img.icons8.com/emoji/60/coin-emoji.png" alt="coin-emoji"/>
             </div>
-
-            <div className="d-flex mx-4 p-2">
-              
-              <div className="dropdown mx-2">
-                <h4>Total Actual Reserves</h4>
-                <p>{tokenSupply?tokenSupply:<></>}</p>
-              </div>
-            </div>
-            <div className="d-flex mx-4 p-2">
-              
-             
-            </div>
+            
             </div> 
-            <div className="dropdown mx-2">
+            <div className="row flex-row justify-content-center mt-3 mb-2">
                 
-                <button type="button" 
-            class="btn btn-lg btn-primary w-75 my-4 rounded-pill"
-            onClick={() => {
-              APPROVEtoken(chainId,tokenName,tokenValue)
-            }}>Approve Token</button>
+                <button type="button" class="btn btn-lg btn-primary rounded-pill w-75"
+                  onClick={() => {
+                    APPROVEtoken(chainId,tokenName,tokenValue)
+                  }}>Approve Token</button>
                 </div>
-             </>:<p>This Token is not allowed on this blockchain</p>}</>:<></>}
+             </>:
+              <div class="alert alert-dismissible alert-danger my-3 p-3">
+                <strong>Oh snap!</strong> This Token is not allowed on Blockchain
+              </div>
+              }</>:<></>}
                     </div>
                      
                     <div className='row flex-row justify-content-center mt-5 mb-3'>
@@ -308,7 +303,13 @@ useEffect(()=>{
                 
 
                 </div>
-             </>:<p>This Token is not allowed on this blockchain</p>}</>:<></>}
+             </>
+             :
+              <div class="alert alert-dismissible alert-danger my-3 p-3">
+                <strong>Oh snap!</strong> This Token is not allowed on Blockchain
+              </div>
+              }
+              </>:<></>}
                     </div>
                      
                     <div className='row flex-row justify-content-center mt-5 mb-3'>

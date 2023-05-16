@@ -1,57 +1,64 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
+import Loader from './../../utils/Loader'
 
-import pools from './../../data/pools'
-const notVerified=require("../../images/notVerified.jpg")
+// import pools from './../../data/pools'
+// const notVerified=require("../../images/notVerified.jpg")
+
+import notVerified from './../../images/notVerified.jpg'
 
 function TopPools() {
+
   const [Pools,setPools]=useState();
+  const [loading, setLoading] = useState(false)
   const [Next,setNext]=useState(1);
+  const navigate = useNavigate();
+
   async function getPools(page){
     try{
+      setLoading(true)
       var response=await fetch(`http://localhost:5000/PoolsPage/?page=${page}`)
       var data=response.json().then((data)=>{console.log(data.data);setPools(data.data)})
       console.log(data)
+      setLoading(false)
       const myDiv= document.getElementById(Number(page-1).toString())
       if(myDiv){
         myDiv.classList.remove('active')
-
       }
-      
       const myDiv1= document.getElementById(page)
       myDiv1.classList.add('active')
-    
       const myDiv2= document.getElementById(Number(page+1).toString())
       if(myDiv2){
         myDiv2.classList.remove('active')
-
-      }
-      
-    
-      
-      
+      } 
   }
   catch(err){
       console.log("err",err)
   }
 
   }
+
   useEffect(()=>{
     getPools(Next);
-
-
   },[Next])
-  
-
-  const navigate = useNavigate();
 
   const handleRowClick = (id) => {
-    
     navigate(`/pools/stats/${id}`);
   }
 
   return (
-    <div class="container" style={{ marginTop:'4rem' }}>
+
+    <>
+
+    {
+      loading && <Loader />
+    }
+
+    {
+      Pools && Pools.length > 0 && (
+        <div class="container" style={{ marginTop:'4rem' }}>
+
+      
 
       <div className="py-5 text-center">
         <h1 className="display-6 ">Top Pools</h1>
@@ -154,7 +161,12 @@ function TopPools() {
       </div>
 
 
-    </div>
+        </div>
+      )
+    }
+
+    
+    </>
   )
 }
 

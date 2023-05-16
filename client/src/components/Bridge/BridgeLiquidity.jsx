@@ -143,14 +143,13 @@ async function getTokenCredentials(mum,token){
                 
                   <div className='row'>
                     <div className="col-6">
-                    <label for="ChainID" class="form-label mt-4">Token</label>
                       <div className='form-group'>
-                        
-                        <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
-                                                </div>
+                        <label for="ChainID" class="form-label mt-4">Token</label>
+                        <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
+                      </div>
                     </div>
                     <div className="col-6">
-                    <label for="Token" class="form-label mt-4">Chain</label>
+                      <label for="Token" class="form-label mt-4">Chain</label>
                       <div className='form-group'>
                         
                         <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
