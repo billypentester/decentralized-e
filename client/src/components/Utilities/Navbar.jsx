@@ -57,20 +57,20 @@ function Navbar({shadow}) {
                 <ul className="navbar-nav ms-auto mb-2 mb-lg-0">
        
                     {walletAddress.length > 0
-                      ? <button type="button" data-mdb-ripple-color="primary" className="btn btn-light mx-2 btn-pill"
+                      ? <button type="button" className="btn btn-light mx-2 btn-pill"
 
                       >              <span>{walletAddress.substring(
                           0,
                           8
                         )}...{walletAddress.substring(38)}</span> </button>
-                      : <button type="button" data-mdb-ripple-color="primary" className="btn btn-light mx-2 btn-rounded" data-toggle="modal" data-target="#exampleModal"
+                      : <button type="button" className="btn btn-light mx-2 btn-rounded" data-toggle="modal" data-target="#exampleModal"
 
                       >              <span> Connect Wallet </span> </button>}
                   
-                    <button type="button" data-mdb-ripple-color="primary" className="btn btn-light mx-2 btn-floating">
+                    <button type="button" className="btn btn-light mx-2 btn-floating">
                         <i style={{ fontSize:'20px' }} className="fa-solid fa-gear text-primary"></i>
                     </button>
-                    <button type="button" data-mdb-ripple-color="primary" className="btn btn-light mx-2 btn-floating">
+                    <button type="button" className="btn btn-light mx-2 btn-floating">
                         <i style={{ fontSize:'20px' }} className="fa-solid fa-ellipsis"></i>
                     </button>
                     

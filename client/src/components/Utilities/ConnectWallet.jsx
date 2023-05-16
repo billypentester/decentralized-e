@@ -22,14 +22,14 @@ function ConnectWallet() {
                     <div className="container">
                         <div className="row">
                             <div className="col-12">
-                                <button type="button" className="d-flex align-items-center btn btn-outline-secondary w-100 my-2" data-mdb-ripple-color="dark"   
+                                <button type="button" className="d-flex align-items-center btn btn-outline-secondary w-100 my-2" data-dismiss="modal"   
                                     onClick={() => {
                                     connectWallet();}}
                                     >
                                     <img className="ml-2 me-3" src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/MetaMask_Fox.svg/2048px-MetaMask_Fox.svg.png" alt="Metamask" width='50px' loading="lazy" />
                                     <span className="h5 m-0">Metamask</span>
                                 </button>
-                                <button type="button" className="d-flex align-items-center btn btn-outline-secondary w-100 my-2" data-mdb-ripple-color="dark">
+                                <button type="button" className="d-flex align-items-center btn btn-outline-secondary w-100 my-2" data-dismiss="modal">
                                     <img className="ml-2 me-3" src="https://trustwallet.com/assets/images/media/assets/TWT.png" alt="Metamask" width='50px' loading="lazy" />
                                     <span className="h5 m-0">Trust Wallet</span>
                                 </button>

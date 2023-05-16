@@ -149,114 +149,131 @@ useEffect(()=>{
                 </div>
 
                 <div className='row flex-column col-6'>
-                
-                  <a>{currentPrice}</a>
               
                   <div className='my-1'>
                     
                     <h5 class="card-title text-start mx-4 p-2"></h5>
-                    <div className="d-flex flex-column mx-4 mb-3 px-4 bg-light h-100">
-                    {
-                      intializedVar ? 
-                      <></>
-                      :
-                      <div className='col-5 bg-light rounded-3 text-white'>
-                        <div>
-                          <div className='my-2'>
-                            <span className='text-dark'>price</span>
+                    <div className="mx-4 mb-3 p-3 bg-light">
+                      
+                        {
+                          currentPrice !== 'need to initialize' ?
+                          <div className='d-flex justify-content-between'>
+                            <div className='d-flex flex-column  my-2'>
+                              <strong className='mb-2'>Price Ratio</strong>
+                              <h4 className='lead text-start'>{currentPrice}</h4>
+                            </div>
+                            <img width="60" height="60" src="https://img.icons8.com/emoji/60/coin-emoji.png" alt="coin-emoji"/>
                           </div>
-                          <div className='d-flex align-items-center justify-content-between my-2'>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={(e)=>{setPRatio(pRatio-1)}} >
-                              <i class="fa-solid fa-minus d-inline" ></i>
-                            </button>
-                            <h5 className='d-inline h-4 m-0 text-dark'>{pRatio}</h5>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={(e)=>{setPRatio(pRatio+1)}}>
-                              <i class="fa-solid fa-plus d-inline"></i>
-                            </button>
+                          :
+                          <div className='d-flex flex-column justify-content-center align-items-center my-2'>
+                            <div className='d-flex text-center my-2'>
+                              <strong className='mb-2 me-1 text-danger'>Oops !!!</strong>
+                              <h4 className='lead text-start text-danger'>{currentPrice}</h4>
+                            </div>
+                          </div>
+                        }
+                      
+                      {
+                        intializedVar ? 
+                        <></>
+                        :
+                        <div className='col-12 bg-light rounded-3'>
+                          <div className='d-flex justify-content-center'>
+                            <div className='form-group'>
+                              <label for="minPrice" class="form-label mt-2 w-100 text-center">Price Ratio</label>
+                              <div class="d-flex align-items-center" role="group" aria-label="Basic example">
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio-1)}}>-</button>
+                                <h5 className='d-inline h-4 m-0 text-dark mx-4'>{pRatio}</h5>
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio+1)}}>+</button>
+                              </div>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    }
+                      }
                     </div>
-                    
-                    
                     
                     {
                       intializedVar?
-                      <div className="d-flex mx-4 p-2 justify-content-around">
-                        <div className='col-5 bg-light rounded-3 text-white'>
-                          <div className='my-2'>
-                            <span className='text-dark'>min price</span>
-                          </div>
-                          <div className='d-flex align-items-center justify-content-between my-2'>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={()=>{
-                              setMinPrice(minPrice-1)
-                            }}>
-                              <i class="fa-solid fa-minus d-inline"></i>
-                            </button>
-                            <h5 className='d-inline h-4 m-0 text-dark'>{minPrice}</h5>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={()=>{
-                              setMinPrice(minPrice+1)
-                            }}>
-                              <i class="fa-solid fa-plus d-inline"></i>
-                            </button>
+                      <div className="row mx-4 p-2 justify-content-around">
+                        <div className='col-5'>
+                          <div className='form-group'>
+                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
+                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(minPrice-1)}}>-</button>
+                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{minPrice}</h5>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(minPrice+1)}}>+</button>
+                            </div>
                           </div>
                         </div>
-                        <div className='col-5 bg-light rounded-3 text-white'>
-                          <div className='my-2'>
-                            <span className='text-dark'>max price</span>
-                          </div>
-                          <div className='d-flex align-items-center justify-content-between my-2'>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={()=>{
-                              setMaxPrice(maxPrice-1)
-                            }}>
-                              <i class="fa-solid fa-minus d-inline"></i>
-                            </button>
-                            <h5 className='d-inline h-4 m-0 text-dark'>{maxPrice}</h5>
-                            <button className='btn btn-secondary p-2 mx-2' onClick={()=>{
-                              setMaxPrice(maxPrice+1)
-                            }}>
-                              <i class="fa-solid fa-plus d-inline"></i>
-                            </button>
+                        <div className='col-5'>
+                          <div className='form-group'>
+                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
+                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(maxPrice-1)}}>-</button>
+                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{maxPrice}</h5>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(maxPrice+1)}}>+</button>
+                            </div>
                           </div>
                         </div>
                       </div>
                       :
-                      <div className="d-flex mx-4 p-2 justify-content-around">
-                        <div className='col-5 bg-light rounded-3 text-white'>
-                          <div className='my-2'>
-                            <span className='text-dark'>min price</span>
-                          </div>
-                          <div className='d-flex align-items-center justify-content-between my-2'>
-                            <button className='btn btn-secondary p-2 mx-2'disabled onClick={()=>{
-                              setMinPrice(minPrice-1)
-                            }}>
-                              <i class="fa-solid fa-minus d-inline"></i>
-                            </button>
-                            <h5 className='d-inline h-4 m-0 text-dark' disabled>{minPrice}</h5>
-                            <button className='btn btn-secondary p-2 mx-2' disabled onClick={()=>{
-                              setMinPrice(minPrice+1)
-                            }}>
-                              <i class="fa-solid fa-plus d-inline"></i>
-                            </button>
+                      // <div className="d-flex mx-4 p-2 justify-content-around">
+                      //   <div className='col-5 bg-light rounded-3'>
+                      //     <div className='my-2'>
+                      //       <span className='text-dark w-100 text-center'>min price</span>
+                      //     </div>
+                      //     <div className='d-flex align-items-center justify-content-between my-2'>
+                      //       <button className='btn btn-secondary p-2 mx-2'disabled onClick={()=>{
+                      //         setMinPrice(minPrice-1)
+                      //       }}>
+                      //         <i class="fa-solid fa-minus d-inline"></i>
+                      //       </button>
+                      //       <h5 className='d-inline h-4 m-0 text-dark' disabled>{minPrice}</h5>
+                      //       <button className='btn btn-secondary p-2 mx-2' disabled onClick={()=>{
+                      //         setMinPrice(minPrice+1)
+                      //       }}>
+                      //         <i class="fa-solid fa-plus d-inline"></i>
+                      //       </button>
+                      //     </div>
+                      //   </div>
+                      //   <div className='col-5 bg-light rounded-3'>
+                      //     <div className='my-2'>
+                      //       <span className='text-dark'>max price</span>
+                      //     </div>
+                      //     <div className='d-flex align-items-center justify-content-between my-2'>
+                      //       <button className='btn btn-secondary p-2 mx-2' disabled  onClick={()=>{
+                      //         setMaxPrice(maxPrice-1)
+                      //       }}>
+                      //         <i class="fa-solid fa-minus d-inline"></i>
+                      //       </button>
+                      //       <h5 className='d-inline h-4 m-0 text-dark'>{maxPrice}</h5>
+                      //       <button className='btn btn-secondary p-2 mx-2' disabled onClick={()=>{
+                      //         setMaxPrice(maxPrice+1)
+                      //       }}>
+                      //         <i class="fa-solid fa-plus d-inline"></i>
+                      //       </button>
+                      //     </div>
+                      //   </div>
+                      // </div>
+                      <div className="row mx-4 p-2 justify-content-around">
+                        <div className='col-5'>
+                          <div className='form-group'>
+                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
+                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
+                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMinPrice(minPrice-1)}}>-</button>
+                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{minPrice}</h5>
+                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMinPrice(minPrice+1)}}>+</button>
+                            </div>
                           </div>
                         </div>
-                        <div className='col-5 bg-light rounded-3 text-white'>
-                          <div className='my-2'>
-                            <span className='text-dark'>max price</span>
-                          </div>
-                          <div className='d-flex align-items-center justify-content-between my-2'>
-                            <button className='btn btn-secondary p-2 mx-2' disabled  onClick={()=>{
-                              setMaxPrice(maxPrice-1)
-                            }}>
-                              <i class="fa-solid fa-minus d-inline"></i>
-                            </button>
-                            <h5 className='d-inline h-4 m-0 text-dark'>{maxPrice}</h5>
-                            <button className='btn btn-secondary p-2 mx-2' disabled onClick={()=>{
-                              setMaxPrice(maxPrice+1)
-                            }}>
-                              <i class="fa-solid fa-plus d-inline"></i>
-                            </button>
+                        <div className='col-5'>
+                          <div className='form-group'>
+                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
+                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
+                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMaxPrice(maxPrice-1)}}>-</button>
+                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{maxPrice}</h5>
+                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMaxPrice(maxPrice+1)}}>+</button>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -269,10 +286,13 @@ useEffect(()=>{
               </div>
 
               <div className='row flex-row justify-content-center mt-5 mb-3'>
-                
-                <button type='button' class='btn btn-lg btn-primary rounded-pill w-75 mb-3' onClick={()=>{approveTokens( token0, token0Amount) }}> Approve token 0 </button>
-                <button type='button' class='btn btn-lg btn-primary rounded-pill w-75 mb-3' onClick={()=>{approveTokens( token1, token1Amount) }}> Approve token 1 </button>
-               
+                    
+                <div className='row flex-row justify-content-center mb-5'>
+                  <button type='button' class='btn btn-lg btn-outline-primary w-25 mx-3' onClick={()=>{approveTokens( token0, token0Amount) }}> Approve token 0 </button>
+                  <button type='button' class='btn btn-lg btn-outline-primary w-25 mx-3' onClick={()=>{approveTokens( token1, token1Amount) }}> Approve token 1 </button>
+                </div>
+            
+
                 {
                 walletAddress.length > 0 ? 
                 (

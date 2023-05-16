@@ -145,56 +145,68 @@ async function getTokenCredentials(mum,token){
                     <div className="col-6">
                       <div className='form-group'>
                         <label for="ChainID" class="form-label mt-4">Token</label>
-                        <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
+                        <button type="button" class="form-control btn btn-outline-primary col-5" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
                       </div>
                     </div>
                     <div className="col-6">
-                      <label for="Token" class="form-label mt-4">Chain</label>
                       <div className='form-group'>
-                        
-                        <button type="button" class="btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
+                        <label for="Token" class="form-label mt-4">Chain</label>
+                        <button type="button" class="form-control btn btn-outline-primary col-5" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
                       </div>
                     </div>
                   </div>
 
                   <div className="row">
+                    <div classNamw="form-group">
                     <label for="DepositedAmmount" class="form-label mt-4">Deposited Ammount</label>
-                    {check?<input type="text" id="form12" className="form-control form-control-lg border-0 px-4 rounded-pill shadow-3-strong mx-3" placeholder='0.0' onChange={(e)=>{ 
-                      setTokenValue(e.target.value);
-                      console.log(tokenValue);
+                      {
+                        check?
+                        <input type="text" id="DepositedAmmount" className="form-control" placeholder='0.0' onChange={(e)=>{ 
+                        setTokenValue(e.target.value);
+                        console.log(tokenValue);
+                      }}/>
+                      :
+                        <input type="text" id="DepositedAmmount" disabled className="form-control" placeholder='0.0' onChange={(e)=>{ 
+                        setTokenValue(e.target.value);
+                        console.log(tokenValue);
+                      }}/>}
+                    </div>
+                  </div>
 
-                    }}/>:<input type="text" id="form12" disabled className="form-control form-control-lg border-0 px-4 rounded-pill shadow-3-strong mx-3" placeholder='0.0' onChange={(e)=>{ 
-                      setTokenValue(e.target.value);
-                      console.log(tokenValue);
-
-                    }}/>}
-                     </div>
-
-                  <div className='row'>
+                  <div className='row justify-content-center'>
                     <div class="form-group">
                       <label for="Fees" class="form-label mt-4"></label><br></br>
-                      <button type='button' class='btn btn-lg btn-primary rounded-pill w-75 mb-3' onClick={() => { APPROVEtoken(chainId,tokenName,tokenValue) }}>Approve Token</button>
+                      <button type='button' class='form-control btn btn-lg btn-primary rounded-pill w-100 mb-3' onClick={() => { APPROVEtoken(chainId,tokenName,tokenValue) }}>Approve Token</button>
                     </div>
                   </div>
 
                 </div>
 
-                <div className='row flex-column col-6'>
-                    <div className='h-100 d-flex flex-column mx-4 mb-3 px-4 bg-light' >
-                    <h4 >Total Actual Reserves</h4>
-                    <p>{check?tokenFee:<></>}</p>
-                    <h4 >Total Liquidity Supply</h4>
-                    <p>{check?tokenSupply:<></>}</p>
+                { check && 
+                  <div className='row flex-column col-6'>
+                    <div className='h-100 d-flex flex-column justify-content-around mx-4 mb-3 p-4 bg-light'>
+                      <div className='d-flex justify-content-between'>
+                        <div className='d-flex flex-column'>
+                          <h4>{check?tokenFee:<></>}</h4>
+                          <p>Total Actual Reserves</p>
+                        </div>
+                        <img width="60" height="60" src="https://img.icons8.com/emoji/60/coin-emoji.png" alt="coin-emoji"/> 
+                      </div>
+                      <div className='d-flex justify-content-between'>
+                        <div className='d-flex flex-column'>
+                          <h4>{check?tokenSupply:<></>}</h4>
+                          <p>Total Liquidity Supply</p>  
+                        </div>
+                        <img width="60" height="60" src="https://img.icons8.com/emoji/60/coin-emoji.png" alt="coin-emoji"/>
+                      </div>
                     </div>
-                   
-                </div>
+                  </div>
+                }
 
               </div>
 
               <div className='row flex-row justify-content-center mt-5 mb-3'>
-
                 
-
                 {
                   walletAddress.length > 0 ? 
                   (
