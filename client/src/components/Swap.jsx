@@ -52,14 +52,14 @@ function Swap() {
 
   return (
     <div className="bg-secondary d-flex justify-content-center flex-column align-items-center" style={{height:'100vh'}}>
-      <div class="card shadow-lg col-md-6 col-lg-5 rounded-3 border border-end-0 border-start-0 border-top-0 border-3 ">
+      <div class="card shadow-lg col-md-7 col-lg-6 rounded-3 border border-end-0 border-start-0 border-top-0 border-3 ">
         <div class="card-header h4 text-center">Swap</div>
         <div class="card-body">
           {console.log(swapToken1,swapToken1Name)}
           <div className='row justify-content-center'>
 
-            <div className='row flex-row justify-content-center align-items-end'>
-              <div className='col-8'>
+            <div className='row flex-row justify-content-center align-items-end m-2'>
+              <div className='col-12 col-sm-7'>
                 <div class="form-group">
                   <label for="Sender" class="form-label mt-4">You Send</label>
                   <input type="number" class="form-control" id="Sender" placeholder="0.0"
@@ -73,13 +73,13 @@ function Swap() {
                   />
                 </div>  
               </div>
-              <div className='col-3'>
+              <div className='col-12 col-sm-3 mt-3 mt-sm-0'>
                 <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#send">{swapToken0Name}</button>
               </div>
             </div>
 
             <div className='row flex-row justify-content-center align-items-end'>
-              <div className='col-8'>
+              <div className='col-12 col-sm-7'>
                 <div class="form-group">
                   <label for="Getter" class="form-label mt-4">You Get</label>
                   <input type="number" class="form-control" id="Getter" placeholder="0.0"
@@ -91,7 +91,7 @@ function Swap() {
                   />
                 </div>  
               </div>
-              <div className='col-3'>
+              <div className='col-12 col-sm-3 mt-3 mt-sm-0'>
                 <button type="button" class="btn btn-outline-primary w-100" data-toggle="modal" data-target="#get">{swapToken1Name}</button>
               </div>
             </div>

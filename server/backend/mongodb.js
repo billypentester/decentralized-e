@@ -196,8 +196,11 @@ app.get('/GetToken/:address',async (req,res)=>{
 })
 
 app.get('/GetPool/:address',async (req,res)=>{
+
     const address = req.params.address;
+    
     const data=await PoolSchema.findOne({pool:address})
+    console.log(data)
     // console.log(data.token0)
     const contract= new web3.eth.Contract(TokenABI,data.token0);
 const amount0= await contract.methods.balanceOf(address).call()

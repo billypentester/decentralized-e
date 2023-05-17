@@ -84,24 +84,22 @@ useEffect(()=>{
     <div class="container" style={{ marginTop:'7rem'}}>
       <div className="bg-secondary d-flex justify-content-center align-items-center py-5">
 
-        <div class="card shadow-lg col-md-6 col-lg-10 rounded-3 border border-end-0 border-start-0 border-top-0 border-3">
+        <div class="card shadow-lg col-12 col-sm-12 col-md-10 rounded-3 border border-end-0 border-start-0 border-top-0 border-3">
           <h5 class="card-header h4 text-center">Add Liquidity</h5>
           <div class="card-body">
 
-            <div className='row'>
+            <div className='row justify-content-center'>
 
               <div className='row justify-content-center'>
 
-                <div className="row flex-column col-6">
+                <div className="row flex-column col-12 col-sm-10 col-md-10 col-lg-6">
 
                   <div className="row">
                     <div class="form-group">
                       <label for="Name" class="form-label mt-4">Token Name</label>
-                      <div class="input-group mb-3">
-                        
-                        <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#send">{swapToken0Name}</button>
-                      <button type="button" class="form-control btn btn-outline-primary col-5 mx-3" data-toggle="modal" data-target="#get">{swapToken1Name}</button>
-                      
+                      <div class="input-group mb-3 row flex-row">
+                        <button type="button" class="form-control btn btn-outline-primary col-5 col-sm-10 mx-3" data-toggle="modal" data-target="#send">{swapToken0Name}</button>
+                        <button type="button" class="form-control btn btn-outline-primary col-5 col-sm-10 mx-3" data-toggle="modal" data-target="#get">{swapToken1Name}</button>                      
                       </div>
                     </div>
                   </div>
@@ -130,15 +128,15 @@ useEffect(()=>{
                     <div class="form-group">
                       <label for="Fees" class="form-label mt-4">Fees</label>
                       <div className="row boxedradio">
-                        <div className="col-4 text-center">
+                        <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="500" name="skills" value="0.01" onChange={(e) => {setFee(500) }}/>
                           <label for="500" class="form-label">500</label>
                         </div>
-                        <div className="col-4 text-center">
+                        <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="3000" name="skills" value="0.1" onChange={(e) => {setFee(3000)}}/>
                           <label for="3000">3000</label>
                         </div>
-                        <div className="col-4 text-center">
+                        <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="10000" name="skills" value="0.3" onChange={(e) => {setFee(10000)}}/>
                           <label for="10000">10000</label>
                         </div>
@@ -148,7 +146,7 @@ useEffect(()=>{
 
                 </div>
 
-                <div className='row flex-column col-6'>
+                <div className='row flex-column col-12 col-sm-10 col-md-10 col-lg-6'>
               
                   <div className='my-1'>
                     
@@ -195,7 +193,7 @@ useEffect(()=>{
                     {
                       intializedVar?
                       <div className="row mx-4 p-2 justify-content-around">
-                        <div className='col-5'>
+                        <div className='col-12 col-sm-5'>
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
@@ -205,7 +203,7 @@ useEffect(()=>{
                             </div>
                           </div>
                         </div>
-                        <div className='col-5'>
+                        <div className='col-12 col-sm-5'>
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
@@ -288,8 +286,8 @@ useEffect(()=>{
               <div className='row flex-row justify-content-center mt-5 mb-3'>
                     
                 <div className='row flex-row justify-content-center mb-5'>
-                  <button type='button' class='btn btn-lg btn-outline-primary w-25 mx-3' onClick={()=>{approveTokens( token0, token0Amount) }}> Approve token 0 </button>
-                  <button type='button' class='btn btn-lg btn-outline-primary w-25 mx-3' onClick={()=>{approveTokens( token1, token1Amount) }}> Approve token 1 </button>
+                  <button type='button' class='btn btn-lg btn-outline-primary w-100 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{approveTokens( token0, token0Amount) }}> Approve token 0 </button>
+                  <button type='button' class='btn btn-lg btn-outline-primary w-100 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{approveTokens( token1, token1Amount) }}> Approve token 1 </button>
                 </div>
             
 

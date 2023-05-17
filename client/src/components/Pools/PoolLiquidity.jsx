@@ -48,7 +48,7 @@ function PoolLiquidity() {
 async function getPositions(){
   if(walletAddress.length>0){
     try{
-      const data = await fetch(`http://localhost:5000/GetPositions/${walletAddress}`)
+      const data = await fetch(`http://localhost:5000/GetPositions/0x8d2a35B3C01E911c85f6548e1A8C47Fe90abCAe5`)
       data=data.json().then((data)=>{console.log(data.data);setPositions((data.data));})
   
     }catch(err){
@@ -56,12 +56,6 @@ async function getPositions(){
     }
 
   }
-  
-
-      
-
-
-
 
 }
 useEffect(()=>{

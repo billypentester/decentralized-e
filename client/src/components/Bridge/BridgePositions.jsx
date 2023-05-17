@@ -51,7 +51,7 @@ async function getPositions(){
   if(walletAddress.length>0){
     try{
       console.log(walletAddress)
-      const data = await fetch(`http://localhost:5000/GetMumPositions/${walletAddress}`)
+      const data = await fetch(`http://localhost:5000/GetMumPositions/0x8d2a35B3C01E911c85f6548e1A8C47Fe90abCAe5`)
       data=data.json().then((data)=>{console.log(data);setPositions((data.data));})
   
     }catch(err){
@@ -68,7 +68,7 @@ async function getPositions1(){
   if(walletAddress.length>0){
     try{
       console.log(walletAddress)
-      const data = await fetch(`http://localhost:5000/GetBscPositions/${walletAddress}`)
+      const data = await fetch(`http://localhost:5000/GetBscPositions/0x8d2a35B3C01E911c85f6548e1A8C47Fe90abCAe5`)
       data=data.json().then((data)=>{console.log(data);setPositions((data.data));})
   
     }catch(err){
