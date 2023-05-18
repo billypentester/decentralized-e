@@ -97,7 +97,8 @@ function Swap() {
             </div>
 
             <div className='row flex-row justify-content-center mt-5 mb-3'>
-              {
+            <button className='btn btn-primary' onClick={openModal}>open popup</button>
+              {/* {
                 walletAddress.length > 0 ?
                 (
                   <>
@@ -111,7 +112,7 @@ function Swap() {
                     <button type='button' class='btn btn-lg btn-primary rounded-pill w-75' onClick={() => {connectWallet();}}>Connect Wallet</button>
                   </>
                 )
-              }
+              } */}
             </div>
 
           </div>
@@ -195,7 +196,7 @@ function Swap() {
       </div>
 
       {
-        showModal && <Popup setShowModal={hideModal} title="Swap" message="Swap Successful" type="success" />
+        showModal && <Popup setShowModal={hideModal} title="Swap" message="Swap Successful" type="success" spin="true" />
       }
 
 

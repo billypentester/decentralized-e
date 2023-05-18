@@ -254,7 +254,7 @@ useEffect(()=>{
                       //   </div>
                       // </div>
                       <div className="row mx-4 p-2 justify-content-around">
-                        <div className='col-5'>
+                        <div className='col-12 col-sm-5'>
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
@@ -264,7 +264,7 @@ useEffect(()=>{
                             </div>
                           </div>
                         </div>
-                        <div className='col-5'>
+                        <div className='col-12 col-sm-5'>
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">

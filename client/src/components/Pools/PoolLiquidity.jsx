@@ -83,19 +83,21 @@ getPositions()
           <div class="card-body">
             {positions?<>
             {positions.map((item,index)=>(
-              <Link to="/pools/liquidityStat">
+              <Link to="/pools/liquidityStat" style={{ textDecoration:'none' }}>
               <div className="text-start text-dark bg-light shadow-1-strong p-4 rounded-3 mb-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center my-3">
                     {/* <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/1027.png" alt="ETH" className="img-fluid" style={{ width:'30px' }} />
                     <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/4943.png" alt="UNI" className="img-fluid" style={{ width:'30px' }} /> */}
-                    <span className="mx-2 h5 my-0">{item.symbol0}/{item.symbol1}</span>
-                    <span className="mx-2 h5 my-0">{Number(item.fee/10000)}%</span>
+                    <h4 className="mx-2 my-0">{item.symbol0}/{item.symbol1}</h4>
+                    <span className="mx-2 my-0 px-3  bg-info text-white rounded-3 lead">{Number(item.fee/10000)}%</span>
                   </div>
                   <button type="button" class="btn btn-primary mx-2">Deposit</button>
                 </div>
-                <span className="h5">Min: {item.priceLower} {item.symbol0} per {item.symbol1} </span ><br></br>
-                <span className="h5"> Max: {item.priceUpper>1000000?formatNumber(Number(item.priceUpper)):item.priceUpper} {item.symbol0} per {item.symbol1} </span >
+                <div className='p-3'>
+                  <strong className="h5">Min: </strong> <span className='lead'>{item.priceLower} {item.symbol0} per {item.symbol1} </span ><br></br>
+                  <strong className="h5"> Max: </strong> <span className='lead'>{item.priceUpper>1000000?formatNumber(Number(item.priceUpper)):item.priceUpper} {item.symbol0} per {item.symbol1} </span >
+                </div>
               </div>
             </Link>
             

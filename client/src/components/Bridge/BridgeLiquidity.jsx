@@ -131,7 +131,7 @@ async function getTokenCredentials(mum,token){
     <div class="container" style={{ marginTop:'7rem' }}>
       <div className="bg-secondary d-flex justify-content-center align-items-center py-5">
 {console.log(tokenName)}
-        <div class="card shadow-lg col-md-6 col-lg-10 rounded-3 border border-end-0 border-start-0 border-top-0 border-3">
+        <div class="card shadow-lg col-12 col-sm-12 col-md-10 rounded-3 border border-end-0 border-start-0 border-top-0 border-3">
           <h5 class="card-header h4 text-center">Add Liquidity to Bridge</h5>
           <div class="card-body">
 
@@ -139,19 +139,19 @@ async function getTokenCredentials(mum,token){
 
               <div className="row justify-content-center">
 
-                <div className="row flex-column col-6">
+                <div className="row flex-column col-12 col-sm-12 col-md-6 col-lg-8">
                 
                   <div className='row'>
-                    <div className="col-6">
+                    <div className="col-12 col-sm-6">
                       <div className='form-group'>
                         <label for="ChainID" class="form-label mt-4">Token</label>
-                        <button type="button" class="form-control btn btn-outline-primary col-5" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
+                        <button type="button" class="form-control btn btn-outline-primary col-12 col-sm-5" data-toggle="modal" data-target="#get">{swapToken0Name}</button>
                       </div>
                     </div>
-                    <div className="col-6">
+                    <div className="col-12 col-sm-6">
                       <div className='form-group'>
                         <label for="Token" class="form-label mt-4">Chain</label>
-                        <button type="button" class="form-control btn btn-outline-primary col-5" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
+                        <button type="button" class="form-control btn btn-outline-primary col-12 col-sm-5" data-toggle="modal" data-target="#send">{swapChain0Name}</button>
                       </div>
                     </div>
                   </div>
@@ -183,7 +183,7 @@ async function getTokenCredentials(mum,token){
                 </div>
 
                 { check && 
-                  <div className='row flex-column col-6'>
+                  <div className='row flex-column col-12 col-sm-12 col-md-6 col-lg-8'>
                     <div className='h-100 d-flex flex-column justify-content-around mx-4 mb-3 p-4 bg-light'>
                       <div className='d-flex justify-content-between'>
                         <div className='d-flex flex-column'>

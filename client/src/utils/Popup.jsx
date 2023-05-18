@@ -1,7 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import Modal from 'react-modal';
+import Loader from './Loader'
 
-function Popup({ setShowModal, title, message, type }) {
+function Popup({ setShowModal, title, message, type, spin }) {
+
+    const [loading, setLoading] = useState(spin)
 
     const closeModal = () => {
         setShowModal(false);
@@ -58,7 +61,14 @@ function Popup({ setShowModal, title, message, type }) {
            {message}
         </div>
         <div className="d-flex justify-content-end m-3">
-            <button className={`btn btn-${type === 'success' ? 'success' : 'danger'}`} onClick={closeModal}>Close</button>
+              {
+                loading === 'true' ? 
+                <div class={`spinner-border text-${type}`} role="status">
+                  <span class="sr-only">Loading...</span>
+                </div>
+                :
+                <button className={`btn btn-${type === 'success' ? 'success' : 'danger'}`} onClick={closeModal}>Close</button>
+              }
         </div>
       </div>
     </Modal>
