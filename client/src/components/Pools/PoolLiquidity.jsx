@@ -1,5 +1,6 @@
 import React,{useContext,useEffect,useState} from 'react'
 import { Link } from 'react-router-dom'
+import Loader from './../../utils/Loader'
 
 
 
@@ -10,6 +11,7 @@ function PoolLiquidity() {
   const {  walletAddress,getManagerContract,getTokenContracts,formatNumber ,chechkChain} = useContext(Token1Context);
   const [totalPositions,setTotalPositions]=useState(0)
   const [positions,setPositions]=useState([])
+  const [loading, setLoading] = useState(false);
 // async function getBalance(){
 //   try{
 //   if(walletAddress){
@@ -48,9 +50,10 @@ function PoolLiquidity() {
 async function getPositions(){
   if(walletAddress.length>0){
     try{
-      const data = await fetch(`http://localhost:5000/GetPositions/0x8d2a35B3C01E911c85f6548e1A8C47Fe90abCAe5`)
-      data=data.json().then((data)=>{console.log(data.data);setPositions((data.data));})
-  
+      setLoading(true)
+      const data = await fetch(`http://localhost:5000/GetPositions/${walletAddress}`)
+      data=data.json().then((data)=>{console.log(data.data);setPositions((data.data));setLoading(false)})
+      
     }catch(err){
 
     }
@@ -68,6 +71,10 @@ getPositions()
 
   return (
     <div class="container" style={{ marginTop:'4rem' }}>
+      
+      {
+      loading && <Loader />
+    }
 {console.log(positions?.length)}
       <div class="py-5 d-flex justify-content-around align-items-center">
         <h1 class="display-6">Pools</h1>
@@ -83,7 +90,7 @@ getPositions()
           <div class="card-body">
             {positions?<>
             {positions.map((item,index)=>(
-              <Link to="/pools/liquidityStat" style={{ textDecoration:'none' }}>
+              <Link  style={{ textDecoration:'none' }}>
               <div className="text-start text-dark bg-light shadow-1-strong p-4 rounded-3 mb-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center my-3">
@@ -104,19 +111,7 @@ getPositions()
 
             ))}</>:<></>}
             
-            <Link to="/pools/liquidityStat">
-              <div className="text-start text-dark bg-light shadow-1-strong p-4 rounded-3 mb-3">
-                <div className="d-flex justify-content-between align-items-center">
-                  <div className="d-flex align-items-center my-3">
-                    <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/1027.png" alt="ETH" className="img-fluid" style={{ width:'30px' }} />
-                    <img src="https://s2.coinmarketcap.com/static/img/coins/200x200/4943.png" alt="UNI" className="img-fluid" style={{ width:'30px' }} />
-                    <span className="mx-2 h5 my-0">ETH/UNI</span>
-                  </div>
-                  <button type="button" class="btn btn-primary mx-2">Deposit</button>
-                </div>
-                <span className="h5">Min: 1.3418 per ETH &lt;&gt; Max: 1.399 per UNI </span >
-              </div>
-            </Link>
+            
         
           </div>
         </div>

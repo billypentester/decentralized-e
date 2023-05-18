@@ -3,6 +3,7 @@ import './../../index.css'
 import React, {useState, useEffect, useContext} from 'react'
 import { Token1Context } from "../../contexts/Token1Context";
 import inputTokens from '../../data/inputTokens'
+import { number } from 'mathjs';
 function CreatePool() {
 
   const {
@@ -40,7 +41,8 @@ function CreatePool() {
   const [swapToken1, setSwapToken1] = useState();
   const [swapToken0Name, setSwapToken0Name] = useState("Select");
   const [swapToken1Name, setSwapToken1Name] = useState("Select");
-
+  const [bool1, setBool1] = useState(false);
+  const [bool2, setBool2] = useState(false);
   const handleMouseDown = (event) => {
     setIsDragging(true);
   };
@@ -79,6 +81,10 @@ useEffect(()=>{
   priceFunctiion()
 
 },[token0,token1,fee])
+
+useEffect(()=>{
+  setMaxPrice(Number(currentPrice).toFixed())
+},[currentPrice])
   return (
     
     <div class="container" style={{ marginTop:'7rem'}}>
@@ -180,9 +186,9 @@ useEffect(()=>{
                             <div className='form-group'>
                               <label for="minPrice" class="form-label mt-2 w-100 text-center">Price Ratio</label>
                               <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio-1)}}>-</button>
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio>0? Number(pRatio-1):0)}}>-</button>
                                 <h5 className='d-inline h-4 m-0 text-dark mx-4'>{pRatio}</h5>
-                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio+1)}}>+</button>
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(Number(pRatio+1))}}>+</button>
                               </div>
                             </div>
                           </div>
@@ -191,15 +197,15 @@ useEffect(()=>{
                     </div>
                     
                     {
-                      intializedVar?
+                      intializedVar ?
                       <div className="row mx-4 p-2 justify-content-around">
                         <div className='col-12 col-sm-5'>
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(minPrice-1)}}>-</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(number(minPrice-1)>0?Number(Number(minPrice)-1):1)}}>-</button>
                               <h5 className='d-inline h-4 m-0 text-dark mx-4'>{minPrice}</h5>
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(minPrice+1)}}>+</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice( Number(minPrice+1)<currentPrice?Number(Number(minPrice)+1):minPrice)}}>+</button>
                             </div>
                           </div>
                         </div>
@@ -207,9 +213,9 @@ useEffect(()=>{
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(maxPrice-1)}}>-</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(Number(maxPrice-1)>currentPrice?Number(Number(maxPrice)-1):maxPrice)}}>-</button>
                               <h5 className='d-inline h-4 m-0 text-dark mx-4'>{maxPrice}</h5>
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(maxPrice+1)}}>+</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMaxPrice(Number(Number(maxPrice)+1))}}>+</button>
                             </div>
                           </div>
                         </div>
@@ -253,28 +259,7 @@ useEffect(()=>{
                       //     </div>
                       //   </div>
                       // </div>
-                      <div className="row mx-4 p-2 justify-content-around">
-                        <div className='col-12 col-sm-5'>
-                          <div className='form-group'>
-                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
-                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMinPrice(minPrice-1)}}>-</button>
-                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{minPrice}</h5>
-                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMinPrice(minPrice+1)}}>+</button>
-                            </div>
-                          </div>
-                        </div>
-                        <div className='col-12 col-sm-5'>
-                          <div className='form-group'>
-                            <label for="minPrice" class="form-label mt-4 w-100 text-center">Max Price</label>
-                            <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMaxPrice(maxPrice-1)}}>-</button>
-                              <h5 className='d-inline h-4 m-0 text-dark mx-4'>{maxPrice}</h5>
-                              <button type="button" class="btn btn-outline-secondary text-dark" disabled onClick={()=>{setMaxPrice(maxPrice+1)}}>+</button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                      <></>
                     }
                   
                   </div>
@@ -285,9 +270,14 @@ useEffect(()=>{
 
               <div className='row flex-row justify-content-center mt-5 mb-3'>
                     
+                    {}
                 <div className='row flex-row justify-content-center mb-5'>
-                  <button type='button' class='btn btn-lg btn-outline-primary w-100 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{approveTokens( token0, token0Amount) }}> Approve token 0 </button>
-                  <button type='button' class='btn btn-lg btn-outline-primary w-100 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{approveTokens( token1, token1Amount) }}> Approve token 1 </button>
+                  {bool1?<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{  setBool1(await approveTokens( token0, token0Amount)==true) }}> Approve token 0 </button>
+                  :<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={async()=>{  setBool1(await approveTokens( token0, token0Amount)==true) }}> Approve token 0 </button>
+                }
+                {bool2? <button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
+:                  <button type='button'  class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
+}
                 </div>
             
 

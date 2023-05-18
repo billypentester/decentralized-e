@@ -67,11 +67,11 @@ function Navbar({shadow}) {
 
                       >              <span> Connect Wallet </span> </button>}
                   
-                    <button type="button" className="btn btn-light mx-2 btn-floating">
-                        <i style={{ fontSize:'20px' }} className="fa-solid fa-gear text-primary"></i>
+                    <button type="button" className="btn btn-light mx-2 btn-floating" >
+                        <i style={{ fontSize:'20px' }} className="fa-solid fa-gear text-primary"  ></i>
                     </button>
-                    <button type="button" className="btn btn-light mx-2 btn-floating">
-                        <i style={{ fontSize:'20px' }} className="fa-solid fa-ellipsis"></i>
+                    <button type="button" className="btn btn-light mx-2 btn-floating" >
+                        <a style={{ fontSize:'14px' }}  rel="noreferrer noopener" target="_blank" href={"https://medium.com/decentralized-exchange" } >Blogs</a>
                     </button>
                     
                 </ul> 

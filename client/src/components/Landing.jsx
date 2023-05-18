@@ -18,11 +18,7 @@ function Landing() {
         <div className="col-10 col-md-5 py-5">
           <h1 className="text-white my-4 display-6">Welcome to the Decentralized Exchange</h1>
           <p className="text-white my-4 lead">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam
-            voluptatum, quod, quia, voluptas quae voluptatem quibusdam
-            necessitatibus voluptates quos accusantium quas. Quisquam, quae
-            voluptates. Quisquam, quae voluptates. Quisquam, quae voluptates.
-          </p>
+          Decentralized exchange is a platform for buying and selling digital assets without the need for a central authority. It also adheres to Islamic financial teachings, such as prohibition of riba (usury or interest) while taking flash loans.</p>
           <Link to="/swap">
             <div className='d-flex justify-content-center'>
               <button className="btn btn-light w-75">Get Started</button>

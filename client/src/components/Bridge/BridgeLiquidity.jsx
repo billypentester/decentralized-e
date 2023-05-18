@@ -43,6 +43,7 @@ function BridgeLiquidity() {
   const [tokenFee,setTokenFee]=useState()
   const [tokenSupply,setTokenSupply]=useState()
   const [check,setcheck]=useState(false)
+  const [bool1, setBool1] = useState(false);
 async function getTokenCredentials(mum,token){
   let contract
   let TokenContract
@@ -176,8 +177,11 @@ async function getTokenCredentials(mum,token){
                   <div className='row justify-content-center'>
                     <div class="form-group">
                       <label for="Fees" class="form-label mt-4"></label><br></br>
-                      <button type='button' class='form-control btn btn-lg btn-primary rounded-pill w-100 mb-3' onClick={() => { APPROVEtoken(chainId,tokenName,tokenValue) }}>Approve Token</button>
-                    </div>
+                      {bool1?<button type='button' disabled class='form-control btn btn-lg btn-primary rounded-pill w-100 mb-3' onClick={async() => { setBool1(await APPROVEtoken(chainId,tokenName,tokenValue)==true) }}>Approve Token</button>
+                   :<button type='button' class='form-control btn btn-lg btn-primary rounded-pill w-100 mb-3' onClick={async() => { setBool1(await APPROVEtoken(chainId,tokenName,tokenValue)==true) }}>Approve Token</button>
+                   
+                   }
+                       </div>
                   </div>
 
                 </div>

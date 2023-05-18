@@ -20,6 +20,7 @@ function UseBridge() {
   const [swapToken1Name, setSwapToken1Name] = useState("Select");
   const [swapChain0Name, setswapChain0Name] = useState("Select");
   const [swapChain1Name, setswapChain1Name] = useState("Select");
+  const [bool1, setBool1] = useState(false);
   const {
     
     addTokenToBlockchain,
@@ -195,7 +196,7 @@ useEffect(()=>{
                     <div className="row flex-row justify-content-center align-items-end">
                       <div className="col-12 col-sm-6">
                         <div className='form-group'>
-                          <label for="Fee" class="form-label mt-4">Fee</label>
+                          <label for="Fee" class="form-label mt-4">Amount</label>
                           <input type="text" id="Fee" className="form-control" placeholder='0.0' onChange={(e)=>{setTokenValue(e.target.value)}}/>
                         </div>
                       </div>
@@ -224,11 +225,15 @@ useEffect(()=>{
             
             </div> 
             <div className="row flex-row justify-content-center mt-3 mb-2">
+                {bool1?<button type="button" class="btn btn-lg btn-primary rounded-pill w-75" disabled
+                  onClick={async () => {
+                    setBool1(APPROVEtoken(chainId,tokenName,tokenValue)==true)
+                  }}>Approve Token</button>:
+                  <button type="button" class="btn btn-lg btn-primary rounded-pill w-75"
+                  onClick={async () => {
+                    setBool1(APPROVEtoken(chainId,tokenName,tokenValue)==true)
+                  }}>Approve Token</button>}
                 
-                <button type="button" class="btn btn-lg btn-primary rounded-pill w-75"
-                  onClick={() => {
-                    APPROVEtoken(chainId,tokenName,tokenValue)
-                  }}>Approve Token</button>
                 </div>
               </>:
               <div class="alert alert-dismissible alert-danger my-3 p-3">

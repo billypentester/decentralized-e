@@ -200,12 +200,12 @@ function PoolStats() {
               <div className='col-6 my-3'>
                 <div className='bg-primary p-3 mx-3 rounded-2 text-light shadow-4-strong'>
                   <div className='d-flex flex-column text-center'>
-                    <h3 className="text-white">{formatNumber((Pool.amount0/10**Pool.decimal0).toLocaleString(
+                  {Number(Pool.amount0)>Number(1000*10**Pool.decimal0)? <h3 className="text-white">{formatNumber((Pool.amount0/10**Pool.decimal0).toLocaleString(
         "fullwide",
         {
           useGrouping: false,
         }
-      ))}</h3>
+      ))}</h3>:<h3 className="text-white">{(Pool.amount0/10**Pool.decimal0).toFixed()} </h3>}
                     <span>{arr[0]}</span>
                   </div>
                 </div>
@@ -214,12 +214,12 @@ function PoolStats() {
               <div className='col-6 my-3'>
                 <div className='bg-primary mx-3 p-3 rounded-2 text-light shadow-4-strong'>
                   <div className='d-flex flex-column text-center'>
-                    <h3 className="text-white">{formatNumber((Pool.amount1/10**Pool.decimal1).toLocaleString(
+                  {Number(Pool.amount1)>Number(1000*10**Pool.decimal1)?<h3 className="text-white">{formatNumber((Pool.amount1/10**Pool.decimal1).toLocaleString(
         "fullwide",
         {
           useGrouping: false,
         }
-      ))}</h3>
+      ))}</h3>:<h3 className="text-white">{(Pool.amount1/10**Pool.decimal1).toFixed()} </h3>}
                     <span>{arr[1]}</span>
                   </div>
                 </div>

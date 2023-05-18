@@ -120,6 +120,7 @@ export default function BridgeProvider({ children }) {
   }
   //approvetoken
   async function APPROVEtoken(CHAINid,tokenName, tokenValue) {
+    try{
     let TokenContract,address
     console.log("chain is", CHAINid)
     
@@ -144,11 +145,32 @@ export default function BridgeProvider({ children }) {
     });
     const Approve = await TokenContract.methods
       .approve(address, tokenValue)
-      .send({ from: walletAddress });
+      .send({ from: walletAddress }).then(()=>{
+        swal({
+          title: "Attention",
+          text: `Transaction was successful`,
+          icon: "warning",
+          button: "OK!",
+          className: "modal_class_success",
+        });
+      });
+      return true
     console.log("approved successfully", Approve);
+  }
+  catch(err){
+    return swal({
+      title: "Attention",
+      text: `Transaction reverted`,
+      icon: "warning",
+      button: "OK!",
+      className: "modal_class_success",
+    });
+
+  }
   }
 
   async function BridgeLiquidityy(CHAINid, tokenName, tokenValue) {
+    try{
     let contract
     let TokenContract
     if(CHAINid!=window.ethereum.chainId){
@@ -173,10 +195,31 @@ export default function BridgeProvider({ children }) {
     console.log(contract);
     const addLiquidityToBridge = await contract.methods
       .addTokensforLiquidity(tokenName, tokenValue)
-      .send({ from: walletAddress });
+      .send({ from: walletAddress }).then(()=>{
+        swal({
+          title: "Attention",
+          text: `Transaction Successful`,
+          icon: "success",
+          button: "OK!",
+          className: "modal_class_success",
+        });
+      });
     console.log("done", addLiquidityToBridge);
   }
+    catch(err){
+      return swal({
+        title: "Attention",
+        text: `Transaction reverted`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+  
+    }
+  }
   async function Deposit(CHAINid,tokenName, tokenValue){
+    try{
+      
 let contract,TokenContract
 await shiftChain(CHAINid)
   
@@ -205,12 +248,32 @@ console.log("message",message)
    const sig= await web3.eth.personal.sign(message,walletAddress)
    console.log(sig)
    console.log(walletAddress,"ok", walletAddress,"ok",tokenName,"ok", tokenValue,"ok", nonce, "ok",sig )
-   const sendMoney= await contract.methods.send(walletAddress,tokenValue,tokenName,nonce,sig).send({from:walletAddress})
+   const sendMoney= await contract.methods.send(walletAddress,tokenValue,tokenName,nonce,sig).send({from:walletAddress}).then(()=>{
+    swal({
+      title: "Attention",
+      text: `Transaction Successful`,
+      icon: "success",
+      button: "OK!",
+      className: "modal_class_success",
+    });
+  });
+    }
+   catch(err){
+    return swal({
+      title: "Attention",
+      text: `Transaction reverted`,
+      icon: "warning",
+      button: "OK!",
+      className: "modal_class_success",
+    });
 
+  }
 
 
   }
 async function getRemainingBalances(CHAINid,tokenName){
+  try{
+      
   let contract
   
   if(CHAINid!=window.ethereum.chainId){
@@ -223,9 +286,28 @@ async function getRemainingBalances(CHAINid,tokenName){
    contract=await getContract(bridgeABI,bscBridgeAddress)
    
  }
- const withdraw= await contract.methods.getRemainingBalance(walletAddress,tokenName).send({from:walletAddress})
+ const withdraw= await contract.methods.getRemainingBalance(walletAddress,tokenName).send({from:walletAddress}).then(()=>{
+  swal({
+    title: "Attention",
+    text: `Transaction Successful`,
+    icon: "success",
+    button: "OK!",
+    className: "modal_class_success",
+  });
+});
 
 
+}
+catch(err){
+ return swal({
+   title: "Attention",
+   text: `Transaction reverted`,
+   icon: "warning",
+   button: "OK!",
+   className: "modal_class_success",
+ });
+
+}
 
 }
   

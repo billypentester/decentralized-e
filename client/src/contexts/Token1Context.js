@@ -43,12 +43,81 @@ export default function TokenProvider({ children }) {
   const [intializedVar, setIntializedVar] = useState(false);
   const [minPrice, setMinPrice] = useState(1);
   const [maxPrice, setMaxPrice] = useState(1);
-
+  const [Errors,setError]=useState(true)
+  
   let web3 = new Web3(window.ethereum);
+
+async function returnName(token){
+  if(token)
+  {
+    try{
+      const contract =await getTokenContracts(token)
+    const name=await contract.methods.symbol().call()
+    return name
+  
+    }catch(err){
+      setError(false)
+      return swal({
+        title: "Attention",
+        text: `Invalid Token`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+
+
+    }
+  }
+  
+  
+
+}
+
+  async function approveTokensRouter(token, tokenAmount) {
+    try{
+      const tokenContract = getTokenContracts(token);
+    const tokenDecimals = await tokenContract.methods.decimals().call();
+    const amountWithDecimals = Number(
+      tokenAmount * 10 ** tokenDecimals
+    ).toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    const Approve = await tokenContract.methods
+          .approve(routerAddress, amountWithDecimals)
+          .send({ from: walletAddress }).then(()=>{
+            swal({
+              title: "Attention",
+              text: `Transaction was successful`,
+              icon: "warning",
+              button: "OK!",
+              className: "modal_class_success",
+            });
+          });
+        await Approve;
+
+    console.log("approved", Approve);
+    return true
+
+    }
+    catch(err){
+      return swal({
+        title: "Attention",
+        text: `Transaction reverted`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+
+    }
+    
+  }
+
+
 
   async function Swap(amounts, bool, percent,token0,token1) {
     // const walletAddress = await connectWallet();
     // console.log(walletAddress);
+    setError(true)
     try {
       if (bool) {
         const ContractRouter = new web3.eth.Contract(routerABI, routerAddress);
@@ -65,10 +134,11 @@ export default function TokenProvider({ children }) {
         
 
         
-        console.log(amount);
+        console.log(amount,"amount is also here sir");
         const Balance = await Contract0.methods.balanceOf(walletAddress).call();
-        console.log(Balance);
-        if (Balance < amount) {
+        console.log(Balance,"balance is here guys");
+        if (Number(Balance) < Number(amount)) {
+          setError(false)
           return swal({
             title: "Attention",
             text: `You don't have sufficient balance.`,
@@ -85,10 +155,7 @@ export default function TokenProvider({ children }) {
           useGrouping: false,
         });
         console.log("slippages", slippageValue);
-        const Approve = await Contract0.methods
-          .approve(routerAddress, amount)
-          .send({ from: walletAddress });
-        await Approve;
+        
         const ExactInputSingle = ContractRouter.methods
           .exactInputSingle([
             token0,
@@ -124,6 +191,7 @@ export default function TokenProvider({ children }) {
         const Balance = await Contract.methods.balanceOf(walletAddress).call();
         console.log(Balance);
         if (Balance < amount) {
+          setError(false)
           return swal({
             title: "Attention",
             text: `You don't have sufficient balance.`,
@@ -209,23 +277,29 @@ export default function TokenProvider({ children }) {
         const accounts = await window.ethereum.request({
           method: "eth_requestAccounts",
         });
+        await accounts
+        console.log(window.ethereum.chainId)
+if(window.ethereum.chainId!=Web3.utils.toHex(chainId))
+{
 
-        await window.ethereum.request({
-          method: "wallet_addEthereumChain",
-          params: [
-            {
-              chainId: Web3.utils.toHex(chainId),
-              chainName: "Mumbai Testnet",
-              rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
-              nativeCurrency: {
-                name: "Mumbai Testnet",
-                symbol: "MATIC",
-                decimals: 18,
-              },
-              blockExplorerUrls: ["https://polygonscan.com/"],
-            },
-          ],
-        });
+  await window.ethereum.request({
+    method: "wallet_addEthereumChain",
+    params: [
+      {
+        chainId: Web3.utils.toHex(chainId),
+        chainName: "Mumbai Testnet",
+        rpcUrls: ["https://rpc-mumbai.maticvigil.com/"],
+        nativeCurrency: {
+          name: "Mumbai Testnet",
+          symbol: "MATIC",
+          decimals: 18,
+        },
+        blockExplorerUrls: ["https://polygonscan.com/"],
+      },
+    ],
+  });
+}
+        
         await window.ethereum.request({
           method: "wallet_switchEthereumChain",
           params: [{ chainId: Web3.utils.toHex(chainId) }],
@@ -279,13 +353,60 @@ export default function TokenProvider({ children }) {
     );
     console.log(Number(value));
   };
-  const quoter = async (amounts, token,token0,token1) => {
+async function getPoolBool(token0, token1,value){
+if(token0 && token1 && value){
+  setError(true)
+  const factoryContract = new web3.eth.Contract(factoryABI, factoryAddress);
+  let getPoolAddress
+  try{
+    getPoolAddress = await factoryContract.methods
+      .getPool(token0, token1, value)
+      .call();
+
+  }catch(err){
+    setError(false)
+    return swal({
+      title: "Attention",
+      text: `Pool Doesn't Exist`,
+      icon: "warning",
+      button: "OK!",
+      className: "modal_class_success",
+    });
+
+
+  }
+    
+
+
+  
+      if(getPoolAddress !="0x0000000000000000000000000000000000000000"){
+        return getPoolAddress
+      }else{
+      setError(false)
+      return swal({
+        title: "Attention",
+        text: `Pool Doesn't Exist`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+    }
+  }
+      
+}
+
+
+
+  const quoter = async (amounts, token,token0,token1,fee) => {
+    const getPoolAddress= await getPoolBool(token0, token1, fee)
+      if(getPoolAddress !="0x0000000000000000000000000000000000000000"){
     const quoterContract = new web3.eth.Contract(quoterABI, quoterAddress);
     console.log(amounts);
     const Token0Contract=await getTokenContracts(token0)
     const Token1Contract=await getTokenContracts(token1)
     const decimals0=await Token0Contract.methods.decimals().call()
     const decimals1=await Token1Contract.methods.decimals().call()
+    setError(true)
     if (token == 1) {
       if (amounts == 0) {
         setEstimatedValue(0);
@@ -301,26 +422,40 @@ export default function TokenProvider({ children }) {
       // console.log(quoterContract);
       console.log(token0,"ok",
         token1,"ok",
-        3000,"ok",
+        fee,"ok",
         amount,"ok"
         )
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
           token0,
           token1,
-          3000,
+          fee,
           amount,
           0
         );
 
-      const resultEst = await web3.eth.call(
-        {
-          from: "0x0000000000000000000000000000000000000000",
-          to: quoterAddress,
-          data: QUOTEExactInputSingle.encodeABI(),
-        },
-        "latest"
-      );
+        let resultEst
+        try{
+          resultEst = await web3.eth.call(
+                {
+                  from: "0x0000000000000000000000000000000000000000",
+                  to: quoterAddress,
+                  data: QUOTEExactInputSingle.encodeABI(),
+                },
+                "latest"
+              );
+        }catch(err){
+          console.log(err)
+          setError(false)
+          return swal({
+            title: "Attention",
+            text: `Insufficient funds in pool.`,
+            icon: "warning",
+            button: "OK!",
+            className: "modal_class_success",
+          });
+        
+        }
       const amount1 = (resultEst / 10 ** decimals1).toLocaleString("fullwide", {
         useGrouping: false,
       });
@@ -343,19 +478,20 @@ export default function TokenProvider({ children }) {
       // console.log(quoterContract);
       console.log(token1,"ok",
         token0,"ok",
-        3000,"ok",
+        fee,"ok",
         amount,"ok"
         )
       const QUOTEExactInputSingle =
         await quoterContract.methods.quoteExactInputSingle(
           token1,
           token0,
-          3000,
+          fee,
           amount,
           0
         );
-
-      const resultEst = await web3.eth.call(
+        let resultEst
+try{
+  resultEst = await web3.eth.call(
         {
           from: "0x0000000000000000000000000000000000000000",
           to: quoterAddress,
@@ -363,6 +499,18 @@ export default function TokenProvider({ children }) {
         },
         "latest"
       );
+}catch(err){
+  console.log(err)
+  setError(false)
+  return swal({
+    title: "Attention",
+    text: `Insufficient funds in pool.`,
+    icon: "warning",
+    button: "OK!",
+    className: "modal_class_success",
+  });
+
+}
       const amount1 = (resultEst / 10 ** decimals0).toLocaleString("fullwide", {
         useGrouping: false,
       });
@@ -371,6 +519,16 @@ export default function TokenProvider({ children }) {
       setEstimatedValue1(Number(amount1).toFixed(5));
       console.log(Number(amount1).toFixed(5));
     }
+  }else{
+    setError(false)
+    return swal({
+      title: "Attention",
+      text: `Pool Doesn't Exist`,
+      icon: "warning",
+      button: "OK!",
+      className: "modal_class_success",
+    });
+  }
   };
   const createToken = async (
     name,
@@ -601,6 +759,9 @@ export default function TokenProvider({ children }) {
     token0Amount,
     token1Amount
   ) {
+    try{
+
+    
     if (window.ethereum) {
       const account = await window.ethereum.request({
         method: "eth_requestAccounts",
@@ -742,6 +903,13 @@ export default function TokenProvider({ children }) {
         walletAddress,
         TimeOut
       );
+      return swal({
+        title: "Attention",
+        text: `Transaction was Successful`,
+        icon: "Success",
+        button: "OK!",
+        className: "modal_class_success",
+      });
 
       // const mintLiquidity = await NFTManagerContract.methods
       //   .mint([
@@ -760,7 +928,20 @@ export default function TokenProvider({ children }) {
       // .send();
     }
   }
+  catch(err){
+    return swal({
+      title: "Attention",
+      text: `Transaction reverted`,
+      icon: "warning",
+      button: "OK!",
+      className: "modal_class_success",
+    });
 
+  }
+
+    
+  }
+//important hai ye
   async function returnPoolAddress(factoryContract, token0, token1, fee) {
     const checkPoolAddress = await factoryContract.methods
       .getPool(token0, token1, fee)
@@ -821,6 +1002,9 @@ export default function TokenProvider({ children }) {
   }
 
   const initializePool = async (token0, token1, fee, pRatio) => {
+    try{
+
+    
     console.log("--------function call--------");
 
     var returnValue;
@@ -861,132 +1045,144 @@ export default function TokenProvider({ children }) {
       console.log(newPoolAddress);
       setCurrentPrice(pRatio);
       return newPoolAddress;
-
-      if (token0 < token1) {
-        const createAndInitialize = await NFTManagerContract.methods
-          .createAndInitializePoolIfNecessary(token0, token1, fee, sqrtPriceX96)
-          .send({ from: walletAddress })
-          .then((value) => {
-            returnValue = value;
-          });
-        console.log("executed with 500 with SAME : ", createAndInitialize);
-        console.log(returnValue);
-        const newPoolAddress = returnValue.events[1].address;
-        console.log(newPoolAddress);
-        // calculating price
-        const poolContract = getPoolContract(newPoolAddress);
-        const slot0 = await poolContract.methods.slot0().call();
-        console.log(slot0);
-        //price from sqrtPriceX96
-        let mysqrtPriceX96 = slot0[0];
-        let myprice = Number((Number(mysqrtPriceX96) / 2 ** 96) ** 2);
-        setPrice(myprice.toFixed(2));
-        console.log("mujee ", Number(myprice));
-        //calculating tick
-        const tickSpacing = await poolContract.methods.tickSpacing().call();
-        console.log("tick spacing", tickSpacing);
-        //finding tick for min price
-        console.log(minPrice);
-        let modForMin = minPrice % tickSpacing;
-        if (modForMin == 0) {
-          console.log(minPrice);
-        } else if (modForMin > tickSpacing / 2) {
-          console.log(modForMin);
-          console.log(tickSpacing);
-          const val = Number(Number(tickSpacing) - Number(modForMin));
-          console.log(val);
-          console.log(minPrice);
-          minPrice = minPrice + val;
-          console.log(Number(minPrice));
-        } else if (modForMin < tickSpacing / 2) {
-          const val = Number(modForMin);
-          console.log(val);
-          minPrice = minPrice - val;
-          console.log(Number(minPrice));
-        }
-
-        //finding tick for max price
-        let modForMax = maxPrice % tickSpacing;
-        if (modForMax == 0) {
-          console.log(maxPrice);
-        } else if (modForMax > tickSpacing / 2) {
-          console.log(modForMax);
-          console.log(tickSpacing);
-          const val = Number(Number(tickSpacing) - Number(modForMax));
-          console.log(val);
-          console.log(maxPrice);
-          maxPrice = maxPrice + val;
-          console.log(Number(maxPrice));
-        } else if (modForMax < tickSpacing / 2) {
-          const val = Number(modForMax);
-          console.log(val);
-          maxPrice = maxPrice - val;
-          console.log(Number(maxPrice));
-        }
-      } else {
-        [token0, token1] = [token1, token0];
-        const createAndInitialize = await NFTManagerContract.methods
-          .createAndInitializePoolIfNecessary(token0, token1, fee, sqrtPriceX96)
-          .send({ from: walletAddress })
-          .then((value) => {
-            returnValue = value;
-          });
-        console.log("executed with 500 with CHANGED : ", createAndInitialize);
-        console.log(returnValue);
-        const newPoolAddress = returnValue.events[1].address;
-        console.log(newPoolAddress);
-        const poolContract = new web3.eth.Contract(poolABI, newPoolAddress);
-        const slot0 = await poolContract.methods.slot0().call();
-        console.log(slot0);
-        //price from sqrtPriceX96
-        let mysqrtPriceX96 = slot0[0];
-        let myprice = Number((Number(mysqrtPriceX96) / 2 ** 96) ** 2);
-        setPrice(myprice.toFixed(2));
-        console.log("mujee ", Number(myprice));
-        //inverted ticks when token0>token1
-        const tickSpacing = await poolContract.methods.tickSpacing().call();
-        console.log("tick spacing", tickSpacing);
-        //finding tick for min price
-        minPrice = 1 / minPrice;
-        let modForMin = minPrice % tickSpacing;
-        if (modForMin == 0) {
-          console.log(minPrice);
-        } else if (modForMin > tickSpacing / 2) {
-          console.log(modForMin);
-          console.log(tickSpacing);
-          const val = Number(Number(tickSpacing) - Number(modForMin));
-          console.log(val);
-          console.log(minPrice);
-          minPrice = minPrice + val;
-          console.log(Number(minPrice));
-        } else if (modForMin < tickSpacing / 2) {
-          const val = Number(modForMin);
-          console.log(val);
-          minPrice = minPrice - val;
-          console.log(Number(minPrice));
-        }
-        //finding tick for max price
-        maxPrice = 1 / maxPrice;
-        let modForMax = maxPrice % tickSpacing;
-        if (modForMax == 0) {
-          console.log(maxPrice);
-        } else if (modForMax > tickSpacing / 2) {
-          console.log(modForMax);
-          console.log(tickSpacing);
-          const val = Number(Number(tickSpacing) - Number(modForMax));
-          console.log(val);
-          console.log(maxPrice);
-          maxPrice = maxPrice + val;
-          console.log(Number(maxPrice));
-        } else if (modForMax < tickSpacing / 2) {
-          const val = Number(modForMax);
-          console.log(val);
-          maxPrice = maxPrice - val;
-          console.log(Number(maxPrice));
-        }
-      }
     }
-  };
+  }
+      catch(err){
+        return swal({
+          title: "Attention",
+          text: `Transaction reverted`,
+          icon: "warning",
+          button: "OK!",
+          className: "modal_class_success",
+        });
+  
+      }
+
+    //   if (token0 < token1) {
+    //     const createAndInitialize = await NFTManagerContract.methods
+    //       .createAndInitializePoolIfNecessary(token0, token1, fee, sqrtPriceX96)
+    //       .send({ from: walletAddress })
+    //       .then((value) => {
+    //         returnValue = value;
+    //       });
+    //     console.log("executed with 500 with SAME : ", createAndInitialize);
+    //     console.log(returnValue);
+    //     const newPoolAddress = returnValue.events[1].address;
+    //     console.log(newPoolAddress);
+    //     // calculating price
+    //     const poolContract = getPoolContract(newPoolAddress);
+    //     const slot0 = await poolContract.methods.slot0().call();
+    //     console.log(slot0);
+    //     //price from sqrtPriceX96
+    //     let mysqrtPriceX96 = slot0[0];
+    //     let myprice = Number((Number(mysqrtPriceX96) / 2 ** 96) ** 2);
+    //     setPrice(myprice.toFixed(2));
+    //     console.log("mujee ", Number(myprice));
+    //     //calculating tick
+    //     const tickSpacing = await poolContract.methods.tickSpacing().call();
+    //     console.log("tick spacing", tickSpacing);
+    //     //finding tick for min price
+    //     console.log(minPrice);
+    //     let modForMin = minPrice % tickSpacing;
+    //     if (modForMin == 0) {
+    //       console.log(minPrice);
+    //     } else if (modForMin > tickSpacing / 2) {
+    //       console.log(modForMin);
+    //       console.log(tickSpacing);
+    //       const val = Number(Number(tickSpacing) - Number(modForMin));
+    //       console.log(val);
+    //       console.log(minPrice);
+    //       minPrice = minPrice + val;
+    //       console.log(Number(minPrice));
+    //     } else if (modForMin < tickSpacing / 2) {
+    //       const val = Number(modForMin);
+    //       console.log(val);
+    //       minPrice = minPrice - val;
+    //       console.log(Number(minPrice));
+    //     }
+
+    //     //finding tick for max price
+    //     let modForMax = maxPrice % tickSpacing;
+    //     if (modForMax == 0) {
+    //       console.log(maxPrice);
+    //     } else if (modForMax > tickSpacing / 2) {
+    //       console.log(modForMax);
+    //       console.log(tickSpacing);
+    //       const val = Number(Number(tickSpacing) - Number(modForMax));
+    //       console.log(val);
+    //       console.log(maxPrice);
+    //       maxPrice = maxPrice + val;
+    //       console.log(Number(maxPrice));
+    //     } else if (modForMax < tickSpacing / 2) {
+    //       const val = Number(modForMax);
+    //       console.log(val);
+    //       maxPrice = maxPrice - val;
+    //       console.log(Number(maxPrice));
+    //     }
+    //   } else {
+    //     [token0, token1] = [token1, token0];
+    //     const createAndInitialize = await NFTManagerContract.methods
+    //       .createAndInitializePoolIfNecessary(token0, token1, fee, sqrtPriceX96)
+    //       .send({ from: walletAddress })
+    //       .then((value) => {
+    //         returnValue = value;
+    //       });
+    //     console.log("executed with 500 with CHANGED : ", createAndInitialize);
+    //     console.log(returnValue);
+    //     const newPoolAddress = returnValue.events[1].address;
+    //     console.log(newPoolAddress);
+    //     const poolContract = new web3.eth.Contract(poolABI, newPoolAddress);
+    //     const slot0 = await poolContract.methods.slot0().call();
+    //     console.log(slot0);
+    //     //price from sqrtPriceX96
+    //     let mysqrtPriceX96 = slot0[0];
+    //     let myprice = Number((Number(mysqrtPriceX96) / 2 ** 96) ** 2);
+    //     setPrice(myprice.toFixed(2));
+    //     console.log("mujee ", Number(myprice));
+    //     //inverted ticks when token0>token1
+    //     const tickSpacing = await poolContract.methods.tickSpacing().call();
+    //     console.log("tick spacing", tickSpacing);
+    //     //finding tick for min price
+    //     minPrice = 1 / minPrice;
+    //     let modForMin = minPrice % tickSpacing;
+    //     if (modForMin == 0) {
+    //       console.log(minPrice);
+    //     } else if (modForMin > tickSpacing / 2) {
+    //       console.log(modForMin);
+    //       console.log(tickSpacing);
+    //       const val = Number(Number(tickSpacing) - Number(modForMin));
+    //       console.log(val);
+    //       console.log(minPrice);
+    //       minPrice = minPrice + val;
+    //       console.log(Number(minPrice));
+    //     } else if (modForMin < tickSpacing / 2) {
+    //       const val = Number(modForMin);
+    //       console.log(val);
+    //       minPrice = minPrice - val;
+    //       console.log(Number(minPrice));
+    //     }
+    //     //finding tick for max price
+    //     maxPrice = 1 / maxPrice;
+    //     let modForMax = maxPrice % tickSpacing;
+    //     if (modForMax == 0) {
+    //       console.log(maxPrice);
+    //     } else if (modForMax > tickSpacing / 2) {
+    //       console.log(modForMax);
+    //       console.log(tickSpacing);
+    //       const val = Number(Number(tickSpacing) - Number(modForMax));
+    //       console.log(val);
+    //       console.log(maxPrice);
+    //       maxPrice = maxPrice + val;
+    //       console.log(Number(maxPrice));
+    //     } else if (modForMax < tickSpacing / 2) {
+    //       const val = Number(modForMax);
+    //       console.log(val);
+    //       maxPrice = maxPrice - val;
+    //       console.log(Number(maxPrice));
+    //     }
+    //   }
+    // }
+  }
   function getTokenContracts(token) {
     const tokenContract = new web3.eth.Contract(kyzABI, token);
 
@@ -1076,6 +1272,9 @@ export default function TokenProvider({ children }) {
     }
   }
   async function approveTokens(token, tokenAmount) {
+    try{
+
+    
     const tokenContract = getTokenContracts(token);
     const tokenDecimals = await tokenContract.methods.decimals().call();
     const amountWithDecimals = Number(
@@ -1085,9 +1284,29 @@ export default function TokenProvider({ children }) {
     });
     const approveTokenss = await tokenContract.methods
       .approve(NFTManagerAddress, amountWithDecimals)
-      .send({ from: walletAddress });
+      .send({ from: walletAddress }).then(()=>{
+        swal({
+          title: "Attention",
+          text: `Transaction was successful`,
+          icon: "warning",
+          button: "OK!",
+          className: "modal_class_success",
+        });
+      });
+      return true
 
     console.log("approved", approveTokenss);
+    }
+    catch(err){
+      return swal({
+        title: "Attention",
+        text: `Transaction reverted`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+
+    }
   }
 
 
@@ -1179,6 +1398,91 @@ async function chechkChain(){
 } 
 
 
+async function BalanceOfUser( tokenName) {
+  if (tokenName  && walletAddress) {
+    const tokenContract = new web3.eth.Contract(kyzABI, tokenName);
+    try{
+      const decimals = await tokenContract.methods.decimals().call();
+      const balance = await tokenContract.methods.balanceOf(walletAddress).call()
+    
+    
+    console.log(balance,"yeeee")
+    let amount=0
+    if(balance>0){
+       amount= (balance / 10 ** decimals).toLocaleString("fullwide", {
+        useGrouping: false,
+      });
+
+    }
+    
+    return amount
+  }
+  catch(err){
+    console.log("error in BalanceOfUser",err)
+    return "This Token is Not Allowed"
+    
+  }
+
+  }
+  
+
+
+}
+async function checkBalanceCondition(tokenName,amount)
+
+{
+  
+  if(tokenName && amount && walletAddress){
+    console.log(tokenName, "&&", amount , "&&", walletAddress)
+  const tokenContract = new web3.eth.Contract(kyzABI, tokenName);
+    const decimals = await tokenContract.methods.decimals().call();
+  amount = (amount * 10 ** decimals).toLocaleString("fullwide", {
+    useGrouping: false,
+  });
+let balance=await BalanceOfUser(tokenName)
+balance = (balance * 10 ** decimals).toLocaleString("fullwide", {
+  useGrouping: false,
+});
+console.log(balance, "&&", Number(balance)<Number(amount) , "&&", amount)
+if(Number(balance)<Number(amount)){
+  return false
+}else{
+  return true
+}
+  }else{
+    return false
+  }
+}
+
+
+async function checkIfApproved(chainId, tokenName, amount) {
+  console.log(amount,"amount ye ayi hai");
+  
+  if (tokenName && amount && walletAddress) {
+    const tokenContract = new web3.eth.Contract(kyzABI, tokenName);
+    const decimals = await tokenContract.methods.decimals().call();
+    amount = (amount * 10 ** decimals).toLocaleString("fullwide", {
+      useGrouping: false,
+    });
+    console.log("amount entered",amount)
+    const checkAllowance = await tokenContract.methods
+      .allowance(walletAddress, routerAddress)
+      .call();
+    
+    console.log(checkAllowance, "checkallowance",checkAllowance < amount,"condition value");
+
+    if (Number(checkAllowance) < Number(amount)) {
+      console.log("running if");
+      return true;
+    } else {
+      console.log("running else if");
+      return false;
+    }
+  } else {
+    return false;
+    }
+  }
+
   return (
     <Token1Context.Provider
       value={{
@@ -1214,7 +1518,16 @@ async function chechkChain(){
       
         getManagerContract,
         getTokenContracts,
-        chechkChain
+        chechkChain,
+        checkIfApproved,
+        approveTokensRouter,
+        BalanceOfUser,
+        checkBalanceCondition,
+        Errors,
+        setError,
+        getPoolBool,
+        returnName
+
       }}
     >
       {children}
