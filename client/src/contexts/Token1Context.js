@@ -461,7 +461,7 @@ if(token0 && token1 && value){
       });
 
       console.log(amount);
-      setEstimatedValue(Number(amount1).toFixed(5));
+      setEstimatedValue(Number(amount1).toFixed(10));
       console.log(Number(amount1).toFixed(5));
     } else {
       if (amounts == 0) {
@@ -516,7 +516,7 @@ try{
       });
 
       console.log(amount);
-      setEstimatedValue1(Number(amount1).toFixed(5));
+      setEstimatedValue1(Number(amount1).toFixed(10));
       console.log(Number(amount1).toFixed(5));
     }
   }else{

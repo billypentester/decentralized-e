@@ -374,7 +374,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setTokenName(token.address);setSwapToken0Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
@@ -411,7 +411,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setchainId(token.chain);setswapChain0Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
@@ -455,7 +455,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#getW" onClick={()=>{setTokenNameW(token.address);setSwapToken1Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
@@ -492,7 +492,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#sendW" onClick={()=>{setchainIdW(token.chain);setswapChain1Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>

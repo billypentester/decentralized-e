@@ -54,8 +54,7 @@ function TopPools() {
       loading && <Loader />
     }
 
-    {
-      Pools && Pools.length > 0 && (
+    
         <div class="container" style={{ marginTop:'4rem' }}>
 
       
@@ -162,8 +161,8 @@ function TopPools() {
 
 
         </div>
-      )
-    }
+      
+    
 
     
     </>

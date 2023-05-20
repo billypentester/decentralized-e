@@ -83,7 +83,7 @@ useEffect(()=>{
 },[token0,token1,fee])
 
 useEffect(()=>{
-  setMaxPrice(Number(currentPrice).toFixed())
+  setMaxPrice(Number(Number(currentPrice)+1).toFixed())
 },[currentPrice])
   return (
     
@@ -136,15 +136,15 @@ useEffect(()=>{
                       <div className="row boxedradio">
                         <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="500" name="skills" value="0.01" onChange={(e) => {setFee(500) }}/>
-                          <label for="500" class="form-label">500</label>
+                          <label for="500" class="form-label">0.05 %</label>
                         </div>
                         <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="3000" name="skills" value="0.1" onChange={(e) => {setFee(3000)}}/>
-                          <label for="3000">3000</label>
+                          <label for="3000">0.3 %</label>
                         </div>
                         <div className="col-12 col-sm-4 text-center">
                           <input className='form-control form-control-lg' type="radio" id="10000" name="skills" value="0.3" onChange={(e) => {setFee(10000)}}/>
-                          <label for="10000">10000</label>
+                          <label for="10000">1 %</label>
                         </div>
                       </div>
                     </div>
@@ -186,9 +186,11 @@ useEffect(()=>{
                             <div className='form-group'>
                               <label for="minPrice" class="form-label mt-2 w-100 text-center">Price Ratio</label>
                               <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(pRatio>0? Number(pRatio-1):0)}}>-</button>
-                                <h5 className='d-inline h-4 m-0 text-dark mx-4'>{pRatio}</h5>
-                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(Number(pRatio+1))}}>+</button>
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(Number(pRatio-1)>0? Number(Number(pRatio)-1):pRatio)}}>-</button>
+                                
+                                <input type="text" id="Fee" className="form-control" value={pRatio}  onChange={(e)=>{setPRatio(e.target.value>0? e.target.value:null)}}/>
+
+                                <button type="button" class="btn btn-outline-secondary" onClick={()=>{setPRatio(Number(Number(pRatio)+1))}}>+</button>
                               </div>
                             </div>
                           </div>
@@ -203,9 +205,9 @@ useEffect(()=>{
                           <div className='form-group'>
                             <label for="minPrice" class="form-label mt-4 w-100 text-center">Min Price</label>
                             <div class="d-flex align-items-center" role="group" aria-label="Basic example">
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(number(minPrice-1)>0?Number(Number(minPrice)-1):1)}}>-</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice(Number(Number(minPrice)-1)>0?Number(Number(minPrice)-1):1)}}>-</button>
                               <h5 className='d-inline h-4 m-0 text-dark mx-4'>{minPrice}</h5>
-                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice( Number(minPrice+1)<currentPrice?Number(Number(minPrice)+1):minPrice)}}>+</button>
+                              <button type="button" class="btn btn-outline-secondary" onClick={()=>{setMinPrice( Number(Number(minPrice)+1)<currentPrice?Number(Number(minPrice)+1):minPrice)}}>+</button>
                             </div>
                           </div>
                         </div>
@@ -330,7 +332,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setToken0(token.address);setSwapToken0Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
@@ -377,7 +379,7 @@ useEffect(()=>{
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setToken1(token.address);setSwapToken1Name(token.token)}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>

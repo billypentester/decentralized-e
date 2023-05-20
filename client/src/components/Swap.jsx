@@ -181,7 +181,7 @@ function closeModal(id) {
                     onChange={(e) => {
                       setToken1(e.target.value);
                       setEstimatedValue(e.target.value);
-                      {swapToken0 && swapToken1 && fee?quoter(e.target.value,2,swapToken0,swapToken1,fee):<></>}                   }}
+                      {swapToken0 && swapToken1 && fee?quoter(e.target.value,1,swapToken0,swapToken1,fee):<></>}                   }}
                   />
                 </div>  
               </div>
@@ -194,15 +194,15 @@ function closeModal(id) {
                       <label for="Fees" class="form-label mt-4">Fees</label>
                       <div className="row boxedradio">
                         <div className="col-4 col-sm-4 text-center">
-                          <input className='form-control form-control-lg' type="radio" id="500" name="skills" value="0.01"  onChange={(e) => {setFee(500) }}/>
+                          <input className='form-control form-control-lg' type="radio" id="500" name="skills" value="0.01"  onChange={(e) => {setFee(500);{swapToken0 && swapToken1 && token1 ?quoter(token1,1,swapToken0,swapToken1,500):<></>} }}/>
                           <label for="500" class="form-label">0.05%</label>
                         </div>
                         <div className="col-4 col-sm-4 text-center">
-                          <input className='form-control form-control-lg' type="radio" id="3000" name="skills" value="0.1" onChange={(e) => {setFee(3000)}}/>
+                          <input className='form-control form-control-lg' type="radio" id="3000" name="skills" value="0.1" onChange={(e) => {setFee(3000);{swapToken0 && swapToken1 && token1 ?quoter(token1,1,swapToken0,swapToken1,3000):<></>}}}/>
                           <label for="3000">0.3%</label>
                         </div>
                         <div className="col-4 col-sm-4 text-center">
-                          <input className='form-control form-control-lg' type="radio" id="10000" name="skills" value="0.3" onChange={(e) => {setFee(10000)}}/>
+                          <input className='form-control form-control-lg' type="radio" id="10000" name="skills" value="0.3" onChange={(e) => {setFee(10000);{swapToken0 && swapToken1 && token1  ?quoter(token1,1,swapToken0,swapToken1,10000):<></>}}}/>
                           <label for="10000">1%</label>
                         </div>
                       </div>
@@ -255,7 +255,7 @@ function closeModal(id) {
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setSwapToken0(token.address);setSwapToken0Name(token.token);{swapToken1 && token1&& fee?quoter(token1,1,token.address,swapToken1,fee):<></>}}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
@@ -293,7 +293,7 @@ function closeModal(id) {
                     <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setSwapToken1(token.address);setSwapToken1Name(token.token);{swapToken0 && token1 && fee?quoter(token1,1,swapToken0,token.address,fee):<></>}}}>
                     <div className='row align-items-center'>
                       <div className='col-2'>
-                        <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/7083.png" alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
                       </div>
                       <div className='col-10'>
                         <h5 className='mb-0'>{token.name}</h5>
