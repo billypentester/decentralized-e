@@ -19,7 +19,7 @@ function Landing() {
           <h1 className="text-white my-4 display-6">Welcome to the Decentralized Exchange</h1>
           <p className="text-white my-4 lead">
           Decentralized exchange is a platform for buying and selling digital assets without the need for a central authority. It also adheres to Islamic financial teachings, such as prohibition of riba (usury or interest) while taking flash loans.</p>
-          <Link to="/swap">
+          <Link to="/swap" style = {{ textDecoration: 'none' }}>
             <div className='d-flex justify-content-center'>
               <button className="btn btn-light w-75">Get Started</button>
             </div>
