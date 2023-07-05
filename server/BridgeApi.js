@@ -1,5 +1,6 @@
 const Web3  = require("web3");
 const abi = require("./ABI/abi.json")
+const TokenABI = require("./ABI/TokenABI.json")
 //updated bridge
 const BridgeMumAddress="0x80d4C799FBBD5B1Dc042ec542d15Db7e7A02639c"
 const BridgeBSCAddress="0x9CE244751064cFb4fE4F345D0A96ef568c0a659b"
@@ -42,6 +43,7 @@ async function Bridge(){
 
 contractMum.events.Transfer({}, 'latest')
 .on("data", async(event)=>{
+  try{
     console.log("Called Successfully")
     const { from, to,token, amount, nonce, signature } = event.returnValues;
     console.log(from,"ok", to,"ok",token,"ok", amount,"ok", nonce, "ok",signature )
@@ -57,16 +59,22 @@ contractMum.events.Transfer({}, 'latest')
     };
     const receipt = await web3Bsc.eth.sendTransaction(txData);
     console.log("successfully bridged")
+  }
+  catch(err){
+    console.log(err)
+  }
     
 })
 .on("connected", function(subscriptionId){
-    console.log("connected bitch1");
+    console.log("connected 1");
+    
 });
 
 
 
 contractBsc.events.Transfer({}, 'latest')
 .on("data", async(event)=>{
+  try{
   console.log("Called Successfully")
   const { from, to,token, amount, nonce, signature } = event.returnValues;
   console.log(from,"ok", to,"ok",token,"ok", amount,"ok", nonce, "ok",signature )
@@ -79,28 +87,37 @@ contractBsc.events.Transfer({}, 'latest')
       to: BridgeMumAddress,
       data:tx1,
       gas:100000,
+      gasPrice:200000000000,
       
     };
     const receipt = await web3.eth.sendTransaction(txData);
     console.log("successfully bridged")
   console.log("successfully bridged")
+}
+catch(err){
+  console.log(err)
+}
   
 }).on("connected", function(subscriptionId){
-  console.log("connected bitch2");
+  console.log("connected 2");
 });
 
 
 contractBsc.events.LiquidityAdded({}, 'latest')
 .on("data", async(event)=>{
+  try{
   console.log("Called Successfully")
   const { user, token, amount} = event.returnValues;
   console.log(event.returnValues);
   console.log(user, token, amount)
-  const fee=await contractBsc.methods.FeeForToken(token)
+  const contract=new web3Bsc.eth.Contract(TokenABI,token)
+  const decimals=await contract.methods.decimals().call()
+  let amount1= Number(Number( amount) / 10 ** decimals);
+  const fee=await contractBsc.methods.FeeForToken(token).call()
   try{
     var response=await fetch("http://localhost:5000/BscPosition",{
         method:"POST",
-        body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount,fee:fee}),
+        body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount1,fee:fee}),
         headers:{"Content-Type":"application/json"}
     })
     console.log(response.status)
@@ -109,26 +126,33 @@ contractBsc.events.LiquidityAdded({}, 'latest')
 catch(err){
     console.log("err",err)
 }
-
+}
+catch(err){
+  console.log(err)
+}
   
   
 }).on("connected", function(subscriptionId){
-  console.log("connected bitch2");
+  console.log("connected 3");
 });
 
 
 
 contractMum.events.LiquidityAdded({}, 'latest')
 .on("data", async(event)=>{
+  try{
     console.log("Called Successfully")
     const { user, token, amount } = event.returnValues;
     console.log(event.returnValues);
   console.log(user, token, amount)
-  const fee=await contractMum.methods.FeeForToken(token)
+  const contract=new web3.eth.Contract(TokenABI,token)
+  const decimals=await contract.methods.decimals().call()
+  let amount1= Number(Number( amount) / 10 ** decimals);
+  const fee=await contractMum.methods.FeeForToken(token).call()
     try{
       var response=await fetch("http://localhost:5000/MumPosition",{
           method:"POST",
-          body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount,fee:fee}),
+          body:JSON.stringify({user:user.toString(),token:token.toString(),amount:amount1,fee:fee}),
           headers:{"Content-Type":"application/json"}
       })
       console.log(response.status)
@@ -137,12 +161,16 @@ contractMum.events.LiquidityAdded({}, 'latest')
   catch(err){
       console.log("err",err)
   }
+}
+catch(err){
+  console.log(err)
+}
    
     
     
 })
 .on("connected", function(subscriptionId){
-    console.log("connected bitch1");
+    console.log("connected 4");
 });
 
 

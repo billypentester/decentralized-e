@@ -23,6 +23,7 @@ const tx =await contract.methods.fee().call().then(console.log)
 
 contract.events.TokenCreated({}, 'latest')
 .on("data", async(event)=>{
+    try{
     console.log("Called Successfully")
     const { owner, token } = event.returnValues;
     const contract= new web3.eth.Contract(TokenABI,token);
@@ -50,11 +51,14 @@ try{
 catch(err){
     console.log("err",err)
 }
-   
+}
+catch(err){
+  console.log(err)
+}
  
     
 })
 .on("connected", function(subscriptionId){
-    console.log("connected bitch1");
+    console.log("connected 1");
 });
 

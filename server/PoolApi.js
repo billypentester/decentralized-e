@@ -23,12 +23,13 @@ const tx =await contract.methods.fee().call().then(console.log)
 
 contract.events.PoolCreated({}, 'latest')
 .on("data", async(event)=>{
+    try{
     console.log("Called Successfully")
     const { token0, token1,fee,tickSpacing,pool } = event.returnValues;
     const contract1= new web3.eth.Contract(TokenABI,token0);
     const contract2= new web3.eth.Contract(TokenABI,token1);
-    const name1=await contract1.methods.name().call()
-    const name2=await contract2.methods.name().call()
+    const name1=await contract1.methods.symbol().call()
+    const name2=await contract2.methods.symbol().call()
     const name= `${name1}/${name2}`
     const fees=Number(fee)/10000;
 
@@ -56,11 +57,15 @@ try{
 catch(err){
     console.log("err",err)
 }
+}
+catch(err){
+  console.log(err)
+}
    
  
     
 })
 .on("connected", function(subscriptionId){
-    console.log("connected bitch1");
+    console.log("connected 1");
 });
 

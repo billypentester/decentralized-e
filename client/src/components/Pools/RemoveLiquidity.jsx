@@ -156,7 +156,7 @@ async function getPosition(){
               <h4 class="card-title text-start mx-2 mb-0">{Position?.name0}/{Position?.name1}</h4>
             </div>
 
-            <div className='my-3 bg-light col-12 rounded-3 p-3'>
+            {/* <div className='my-3 bg-light col-12 rounded-3 p-3'>
               <h4>Amount</h4>
               <div class="range my-3">
                 <div className='d-flex justify-content-between my-2'>
@@ -168,7 +168,7 @@ async function getPosition(){
                 </div>
                 <input type="range" class="form-range" min="0" max="100" step="25" id="customRange3" />
               </div>
-            </div>
+            </div> */}
 
             <div className='my-2 bg-light col-12 rounded-3 p-3'>
               <h4 className='mb-3'>Price</h4>
