@@ -16,7 +16,7 @@ const Web3 = require("web3");
 
 export default function BridgeProvider({ children }) {
   var MumURL="wss://polygon-mumbai.g.alchemy.com/v2/MXTlA2FpRDF3lP5pMRFjWA8C-o-Khq8b";
-  const BSCURL="wss://solemn-icy-sunset.bsc-testnet.discover.quiknode.pro/146f42549cf179d7117ec11c84476907a4fa7edd/"
+  const BSCURL="wss://serene-withered-sponge.bsc-testnet.discover.quiknode.pro/393e752e6aed76a5aff551bfc6c160ea4f906bbb/"
   const { walletAddress, approveTokens } = useContext(Token1Context);
   let web3 = new Web3(window.ethereum);
   let web3BSC= new Web3(BSCURL);
@@ -218,6 +218,7 @@ export default function BridgeProvider({ children }) {
     }
   }
   async function Deposit(CHAINid,tokenName, tokenValue){
+    console.log(CHAINid,tokenName, tokenValue)
     try{
       
 let contract,TokenContract
@@ -225,12 +226,13 @@ await shiftChain(CHAINid)
   
   if(CHAINid==0x13881){
     contract=await getContract(bridgeABI,mumBridgeAddress)
+    TokenContract = await getTokenContract(tokenName);
     
  }else{
    contract=await getContract(bridgeABI,bscBridgeAddress)
-   
+   TokenContract = await getBSCTokenContract(tokenName);
  }
- TokenContract = await getTokenContract(tokenName);
+ 
  const decimals = await TokenContract.methods.decimals().call()
     tokenValue = (tokenValue * 10 ** decimals).toLocaleString("fullwide", {
       useGrouping: false,
@@ -242,13 +244,13 @@ await shiftChain(CHAINid)
     {t: 'address', v: walletAddress},
      {t: 'address', v: walletAddress},
      {t: 'uint256', v: tokenValue},
-    {t: 'uint256', v: nonce},
+    {t: 'uint256', v: Number(nonce+20)},
    ).toString('hex');
 console.log("message",message)
    const sig= await web3.eth.personal.sign(message,walletAddress)
    console.log(sig)
-   console.log(walletAddress,"ok", walletAddress,"ok",tokenName,"ok", tokenValue,"ok", nonce, "ok",sig )
-   const sendMoney= await contract.methods.send(walletAddress,tokenValue,tokenName,nonce,sig).send({from:walletAddress}).then(()=>{
+   console.log(walletAddress,"ok", walletAddress,"ok",tokenName,"ok", tokenValue,"ok", Number(nonce+20), "ok",sig )
+   const sendMoney= await contract.methods.send(walletAddress,tokenValue,tokenName,Number(nonce+20),sig).send({from:walletAddress}).then(()=>{
     swal({
       title: "Attention",
       text: `Transaction Successful`,
@@ -310,6 +312,61 @@ catch(err){
 }
 
 }
+
+async function WithdrawOnSecondBlockchain(CHAINid,tokenName,supplyAmount, tokenValue){
+  try{
+    
+let contract,TokenContract
+await shiftChain(CHAINid)
+
+if(CHAINid==0x13881){
+  contract=await getContract(bridgeABI,mumBridgeAddress)
+  
+}else{
+ contract=await getContract(bridgeABI,bscBridgeAddress)
+ 
+}
+TokenContract = await getTokenContract(tokenName);
+const decimals = await TokenContract.methods.decimals().call()
+  tokenValue = (tokenValue * 10 ** decimals).toLocaleString("fullwide", {
+    useGrouping: false,
+  });
+const nonce= await contract.methods.nonces().call()
+console.log(nonce)
+
+ const message = web3.utils.soliditySha3(     
+  {t: 'address', v: walletAddress},
+   {t: 'address', v: walletAddress},
+   {t: 'uint256', v: tokenValue},
+  {t: 'uint256', v: nonce},
+ ).toString('hex');
+console.log("message",message)
+ const sig= await web3.eth.personal.sign(message,walletAddress)
+ console.log(sig)
+ console.log(walletAddress,"ok", walletAddress,"ok",tokenName,"ok", tokenValue,"ok", nonce, "ok",sig )
+ const sendMoney= await contract.methods.getLiquidityFromSupplyOnSecondBlockchain(tokenName,supplyAmount,nonce,sig).send({from:walletAddress}).then(()=>{
+  swal({
+    title: "Attention",
+    text: `Transaction Successful`,
+    icon: "success",
+    button: "OK!",
+    className: "modal_class_success",
+  });
+});
+  }
+ catch(err){
+  return swal({
+    title: "Attention",
+    text: `Transaction reverted`,
+    icon: "warning",
+    button: "OK!",
+    className: "modal_class_success",
+  });
+
+}
+
+
+}
   
   
 
@@ -325,7 +382,13 @@ catch(err){
         getBSCTokenContract,
         getMUMTokenContract,
         Deposit,
-        getRemainingBalances
+        getRemainingBalances,
+        WithdrawOnSecondBlockchain,
+        bridgeABI,
+        mumBridgeAddress,
+        getContract,
+        bscBridgeAddress,
+        shiftChain
       }}
     >
       {children}

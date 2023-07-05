@@ -11,7 +11,7 @@ function PoolLiquidity() {
   const {  walletAddress,getManagerContract,getTokenContracts,formatNumber ,chechkChain} = useContext(Token1Context);
   const [bool,setbool]=useState(false)
   const [positions,setPositions]=useState([])
-  const [blockchain,setBlockchain]=useState("ETH")
+  const [blockchain,setBlockchain]=useState("MUM")
   
 // async function getBalance(){
 //   try{
@@ -54,7 +54,7 @@ async function getPositions(){
       console.log(walletAddress)
       
       const data = await fetch(`http://localhost:5000/GetMumPositions/${walletAddress}`)
-      data=data.json().then((data)=>{console.log(data);setPositions((data.data));setBlockchain("ETH")})
+      data=data.json().then((data)=>{console.log(data);setPositions((data.data));setBlockchain("MUM")})
       
   
 
@@ -126,7 +126,7 @@ useEffect(()=>{
           <div class="card-body">
             {positions?<>
             {positions.map((item,index)=>(
-              <Link  style={{ textDecoration:'none' }}>
+              <Link to={`/bridge/liquiditystat/remove/${blockchain}`}  style={{ textDecoration:'none' }}>
               <div className="text-start text-dark bg-light shadow-1-strong p-4 rounded-3 mb-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center my-3">

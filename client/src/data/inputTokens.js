@@ -54,6 +54,28 @@ const inputTokens = [
       action:'buy',
       image:'https://raw.githubusercontent.com/Uniswap/assets/master/blockchains/ethereum/assets/0x6B175474E89094C44Da98b954EedeAC495271d0F/logo.png'
     },
+    {
+      id:5,
+      name:"Mutee Naik",
+      token:"MNK",
+      price:'$1.000',
+      address:"0x6b0b32FbB73644835792C0fb5C455746D50B4dcF",
+      change:'0.00%',
+      marketGap:'$337.6M',
+      action:'buy',
+      image:'https://th.bing.com/th/id/R.88d4f0a56564195cc911077d59eb49c6?rik=0jiW7A%2fIYEJa7A&pid=ImgRaw&r=0'
+    },
+    {
+      id:5,
+      name:"Zubair Naik",
+      token:"ZNK",
+      price:'$1.000',
+      address:"0xFDFc40Ac603f2835E758fc959FF6bD33F88C6Bf0",
+      change:'0.00%',
+      marketGap:'$337.6M',
+      action:'buy',
+      image:'https://th.bing.com/th/id/R.230579ae556e0c6c2ee4aa5299431fd1?rik=VjYYQMhTioLejw&pid=ImgRaw&r=0'
+    },
     
 ];
 

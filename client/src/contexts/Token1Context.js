@@ -27,6 +27,7 @@ import {
   BSCchainid,
 } from "../utils/contants";
 import swal from "sweetalert";
+import { bignumber } from "mathjs";
 export const Token1Context = createContext();
 
 const Web3 = require("web3");
@@ -1298,13 +1299,14 @@ try{
     console.log("approved", approveTokenss);
     }
     catch(err){
-      return swal({
+      swal({
         title: "Attention",
         text: `Transaction reverted`,
         icon: "warning",
         button: "OK!",
         className: "modal_class_success",
       });
+      return false
 
     }
   }
@@ -1483,6 +1485,167 @@ async function checkIfApproved(chainId, tokenName, amount) {
     }
   }
 
+async function getReturnValuesLiquidity(tokenID){
+  const contract =await getManagerContract()
+  const params = {
+    tokenId: tokenID,
+    recipient: walletAddress,
+    amount0Max: "340282366920938463463374607431768211455",
+    amount1Max: "340282366920938463463374607431768211455",
+  };
+  
+  const swapp = contract.methods.collect(params);
+  
+  const value = await web3.eth.call(
+    {
+      from: walletAddress,
+      to: NFTManagerAddress,
+      data: swapp.encodeABI(),
+      value: "0",
+    },
+    "latest"
+  );
+  
+  // Decode the return values using the contract's ABI
+  const returnValues = web3.eth.abi.decodeParameters(['uint128', 'uint128'], value);
+
+  console.log(returnValues);
+  return returnValues
+  
+}
+
+
+async function getReturnPooledLiquidity(tokenID,liquidity){
+  const TimeOut = Date.now() + 5 * 60;
+  const contract =await getManagerContract()
+  const params = {
+    tokenId: tokenID,
+    liquidity: liquidity,
+    amount0Min: 0,
+    amount1Min: 0,
+    deadline:TimeOut
+  };
+  
+  const swapp = contract.methods.decreaseLiquidity(params);
+  
+  try{
+    const value = await web3.eth.call(
+      {
+        from: walletAddress,
+        to: NFTManagerAddress,
+        data: swapp.encodeABI(),
+        value: "0",
+      },
+      "latest"
+    );
+    const returnValues = web3.eth.abi.decodeParameters(['uint128', 'uint128'], value);
+
+    console.log(returnValues);
+    return returnValues
+  }catch(err){
+    console.log("err",err)
+  }
+  
+  
+  // Decode the return values using the contract's ABI
+
+  
+}
+
+async function DecreaseAllLiquidity(tokenID,liquidity){
+  const TimeOut = Date.now() + 5 * 60;
+  const contract =await getManagerContract()
+  const params = {
+    tokenId: tokenID,
+    liquidity: liquidity,
+    amount0Min: 0,
+    amount1Min: 0,
+    deadline:TimeOut
+  };
+  try{
+    const swapp =await contract.methods.decreaseLiquidity(params).send({ from: walletAddress }).then(()=>{
+      swal({
+        title: "Attention",
+        text: `Transaction was successful`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+    });
+    return true
+
+  }catch (err){
+    console.log("err:", err)
+
+  }
+ 
+  
+
+  
+}
+
+async function CollectAllLiquidity(tokenID){
+  
+  const contract =await getManagerContract()
+  const params = {
+    tokenId: tokenID,
+    recipient: walletAddress,
+    amount0Max: "340282366920938463463374607431768211455",
+    amount1Max: "340282366920938463463374607431768211455",
+  };
+  try{
+    const swapp =await contract.methods.collect(params).send({ from: walletAddress }).then(()=>{
+      swal({
+        title: "Attention",
+        text: `Transaction was successful`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+    });;
+    return true
+
+  }catch (err){
+    console.log("err:", err)
+
+  }
+ 
+  
+
+  
+}
+
+async function DeletePosition(tokenID){
+  
+  const contract =await getManagerContract()
+ 
+  try{
+    const swapp =await contract.methods.burn(tokenID).send({ from: walletAddress }).then(()=>{
+      swal({
+        title: "Attention",
+        text: `Transaction was successful`,
+        icon: "warning",
+        button: "OK!",
+        className: "modal_class_success",
+      });
+    });;
+    return true
+
+  }catch (err){
+    console.log("err:", err)
+
+  }
+ 
+  
+
+  
+}
+
+
+useEffect(()=>{
+
+},[])
+
   return (
     <Token1Context.Provider
       value={{
@@ -1526,7 +1689,12 @@ async function checkIfApproved(chainId, tokenName, amount) {
         Errors,
         setError,
         getPoolBool,
-        returnName
+        returnName,
+        getReturnValuesLiquidity,
+        getReturnPooledLiquidity,
+        CollectAllLiquidity,
+        DecreaseAllLiquidity,
+        DeletePosition
 
       }}
     >

@@ -139,7 +139,7 @@ async function getTokenData(address){
             </div>
             <div>
               <button className="btn btn-lg btn-primary">
-                <Link to={`/swap`} className="text-decoration-none text-light">Swap {tokenStat.name}</Link>
+                <Link to={`/swap`} className="text-decoration-none text-light">Swap {(Tokens.name).toString().charAt(0).toUpperCase()+(Tokens.name).toString().toLowerCase().slice(1)}</Link>
               </button>
             </div>
           </div>
@@ -190,6 +190,8 @@ async function getTokenData(address){
 
             <div className='col-5 bg-primary m-3 p-3 box rounded-2 text-light shadow-4-strong'>
               <div className='d-flex flex-column text-center'>
+
+                {console.log("read here: ",Tokens.decimals)}
                 <h3 className='text-white'>{Tokens.decimals?Tokens.decimals:<>-</>}</h3>
                 <span>Decimals</span>
               </div>

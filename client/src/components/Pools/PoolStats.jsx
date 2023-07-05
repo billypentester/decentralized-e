@@ -148,7 +148,7 @@ function PoolStats() {
             </div>
             <div>
               <button className="btn btn-lg btn-primary mx-3">
-                <Link to={`/bridge/liquidity`} className="text-decoration-none text-light">Add Liquidity</Link>
+                <Link to={`/pools/create`} className="text-decoration-none text-light">Add Liquidity</Link>
               </button>
             </div>
           </div>

@@ -20,7 +20,7 @@ function PoolRouter() {
       <Route path="/stats/:id" element={ <PoolStats /> } />
       <Route path="/liquiditystat" element={ <ShowLiquidity /> } />
       <Route path="/liquiditystat/add" element={ <AddLiquidity /> } />
-      <Route path="/liquiditystat/remove" element={ <RemoveLiquidity /> } />
+      <Route path="/liquiditystat/remove/:id" element={ <RemoveLiquidity /> } />
     </Routes>
   )
 }

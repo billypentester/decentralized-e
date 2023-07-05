@@ -90,7 +90,7 @@ getPositions()
           <div class="card-body">
             {positions?<>
             {positions.map((item,index)=>(
-              <Link  style={{ textDecoration:'none' }}>
+              <Link to={`/pools/liquiditystat/remove/${item.tokenId}`} style={{ textDecoration:'none' }}>
               <div className="text-start text-dark bg-light shadow-1-strong p-4 rounded-3 mb-3">
                 <div className="d-flex justify-content-between align-items-center">
                   <div className="d-flex align-items-center my-3">

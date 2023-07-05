@@ -23,7 +23,8 @@ function CreatePool() {
     minPrice, 
     setMinPrice,
     initializePool,
-    approveTokens
+    approveTokens,
+    returnName
 
 
   } = useContext(Token1Context);
@@ -47,6 +48,40 @@ function CreatePool() {
     setIsDragging(true);
   };
 
+  async function checkSearch(bool,token){
+    const name= await returnName(token)
+    if(bool==1){
+      
+      
+      
+      setToken0(token);
+      setSwapToken0Name(name)
+  
+    }else{
+      setToken1(token)
+      setSwapToken1Name(name)
+    }
+     
+  
+  } 
+
+  function handleKeyPress(event,id) {
+    console.log(event,"event here")
+    if (event.key === 'Enter') {
+      // Close the modal
+      
+      closeModal(id);
+    }
+  }
+
+  function closeModal(id) {
+    // Close the modal using JavaScript or jQuery, depending on your setup
+    // For example, using jQuery:
+   console.log("worked shayad")
+   var modal = document.getElementById(id);
+    const closeButton = modal.querySelector('[data-dismiss="modal"]');
+    closeButton.click();
+  }
   const handleMouseMove = (event) => {
     if (isDragging && event.target.tagName === 'circle') {
       if(position.x + event.movementX < 25){
@@ -77,6 +112,27 @@ async function priceFunctiion(){
   }
 
 }
+
+async function ApproveBool(value, token0, token0Amount){
+  if(value==1){
+    const nice= await approveTokens( token0, token0Amount);
+    console.log("nice",nice)
+    if(nice){
+      setBool1(nice)
+
+    }
+    
+
+  }else{
+    const nice= await approveTokens( token0, token0Amount);
+    if(nice){
+      setBool2(nice)
+
+    }
+  }
+  
+
+} 
 useEffect(()=>{
   priceFunctiion()
 
@@ -112,7 +168,7 @@ useEffect(()=>{
                   
                   <div className='row'>
                     <div class="form-group">
-                      <label for="Amount" class="form-label mt-4">Deposited Ammount</label>
+                      <label for="Amount" class="form-label mt-4">Deposit Ammount</label>
                       <div class="d-flex flex-column">
                         {
                           intializedVar ? 
@@ -170,10 +226,20 @@ useEffect(()=>{
                           </div>
                           :
                           <div className='d-flex flex-column justify-content-center align-items-center my-2'>
-                            <div className='d-flex text-center my-2'>
+                            
+                              {token0!=token1?
+                              <div className='d-flex text-center my-2'>
                               <strong className='mb-2 me-1 text-danger'>Oops !!!</strong>
                               <h4 className='lead text-start text-danger'>{currentPrice}</h4>
-                            </div>
+                              </div>
+                            :
+                            <div className='d-flex text-center my-2'>
+                              <strong className='mb-2 me-1 text-danger'>Oops !!!</strong>
+                              <h4 className='lead text-start text-danger'>You can crete this Pool</h4>
+                              </div>
+                            }
+                              
+                            
                           </div>
                         }
                       
@@ -274,12 +340,32 @@ useEffect(()=>{
                     
                     {}
                 <div className='row flex-row justify-content-center mb-5'>
-                  {bool1?<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{  setBool1(await approveTokens( token0, token0Amount)==true) }}> Approve token 0 </button>
-                  :<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={async()=>{  setBool1(await approveTokens( token0, token0Amount)==true) }}> Approve token 0 </button>
-                }
+                  {bool1 ?<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{  setBool1(await approveTokens( token0, token0Amount)==true) }}> Approve token 0 </button>
+                  :
+                  <>                
+                  {walletAddress.length>0 && intializedVar?
+                    <button type='button'  class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{ApproveBool(1, token0, token0Amount) }}> Approve token 0 </button>
+                  :
+                  <button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
+                  
+                  
+                  
+                  }
+                  
+                  </> 
+                  }
                 {bool2? <button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
-:                  <button type='button'  class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
+: <>                
+{walletAddress.length && intializedVar>0?
+  <button type='button'  class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' onClick={()=>{ApproveBool(2, token1, token1Amount) }}> Approve token 1 </button>
+:
+<button type='button' class='btn btn-lg btn-outline-primary w-25 w-sm-25 mx-3 mb-2 mb-sm-0' disabled onClick={async()=>{setBool2(await approveTokens( token1, token1Amount)==true) }}> Approve token 1 </button>
+
+
+
 }
+
+</> }
                 </div>
             
 
@@ -288,7 +374,12 @@ useEffect(()=>{
                 (
                   !intializedVar?
                   <>
+                  {token0!=token1?<>
                     <button type='button' class='btn btn-lg btn-primary rounded-pill w-75 mb-3' onClick={()=>{initializePool( token0, token1, fee, pRatio) }}> Initialize Pool </button>
+                  </>
+                  :
+                  <button disabled type='button' class='btn btn-lg btn-primary rounded-pill w-75 mb-3' onClick={()=>{initializePool( token0, token1, fee, pRatio) }}> Initialize Pool </button>
+                }
                   </>
                   :
                   <>
@@ -312,7 +403,7 @@ useEffect(()=>{
       </div>
 
 
-      <div className="modal fade" id="send" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+      {/* <div className="modal fade" id="send" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
         <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
           <div className="modal-content">
             <div className="modal-header">
@@ -325,7 +416,7 @@ useEffect(()=>{
               <div className='row justify-content-center'>
                 <div class="form-group">
                   <label class="form-label">Search</label>
-                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token" onKeyDown={(event)=>{handleKeyPress(event,"get")}}  onChange={(e)=>{checkSearch(2,e.target.value)}}/>
                 </div>
                 <div class="d-flex flex-column my-3">
                   {inputTokens.map((token,index)=>(
@@ -372,7 +463,7 @@ useEffect(()=>{
               <div className='row justify-content-center'>
                 <div class="form-group">
                   <label class="form-label">Search</label>
-                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token"/>
+                  <input type="email" class="form-control" id="SearchToken" placeholder="Search Token" onKeyDown={(event)=>{handleKeyPress(event,"send")}}  onChange={(e)=>{checkSearch(1,e.target.value)}}/>
                 </div>
                 <div class="d-flex flex-column my-3">
                 {inputTokens.map((token,index)=>(
@@ -396,7 +487,85 @@ useEffect(()=>{
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+
+
+
+
+      <div className="modal fade" id="send" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Choose Token</h5>
+                <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send">
+                  <span aria-hidden="true"></span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className='row justify-content-center'>
+                  <div class="form-group">
+                    <label class="form-label">Search</label>
+                    <input type="email" class="form-control" id="SearchToken" placeholder="Search Token" onKeyDown={(event)=>{handleKeyPress(event,"send")}}  onChange={(e)=>{checkSearch(1,e.target.value)}}/>
+                  </div>
+                  <div class="d-flex flex-column my-3">
+                    {inputTokens.map((token,index)=>(
+                      <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#send" onClick={()=>{setToken0(token.address);setSwapToken0Name(token.token)}}>
+                      <div className='row align-items-center'>
+                        <div className='col-2'>
+                          <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        </div>
+                        <div className='col-10'>
+                          <h5 className='mb-0'>{token.name}</h5>
+                          <p className='mb-0'>{token.token}</p>
+                        </div>
+                      </div>
+                    </button>
+
+                    ))}
+                  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="modal fade" id="get" tabindex="-1" aria-hidden="true">
+          <div className="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Choose Token</h5>
+                <button type="button"  className="btn-close" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get">
+                  <span aria-hidden="true"></span>
+                </button>
+              </div>
+              <div className="modal-body">
+                <div className='row justify-content-center'>
+                  <div class="form-group">
+                    <label class="form-label">Search</label>
+                    <input type="email" class="form-control" id="SearchToken" placeholder="Search Token" onKeyDown={(event)=>{handleKeyPress(event,"get")}}  onChange={(e)=>{checkSearch(2,e.target.value)}}/>
+                  </div>
+                  <div class="d-flex flex-column my-3">
+                  {inputTokens.map((token,index)=>(
+                      <button type="button" class="btn btn-outline-light text-start w-100 mt-2" data-dismiss="modal" aria-label="Close" data-toggle="modal" data-target="#get" onClick={()=>{setToken1(token.address);setSwapToken1Name(token.token)}}>
+                      <div className='row align-items-center'>
+                        <div className='col-2'>
+                          <img src={token.image} alt="..." className='rounded-circle' style={{width:'50px', height:'50px'}}/>
+                        </div>
+                        <div className='col-10'>
+                          <h5 className='mb-0'>{token.name}</h5>
+                          <p className='mb-0'>{token.token}</p>
+                        </div>
+                      </div>
+                    </button>
+
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
 
 
     </div>
